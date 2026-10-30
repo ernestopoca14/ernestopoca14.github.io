@@ -1,0 +1,7 @@
+---
+title: Ernesto's notes
+---
+
+Hi, I'm Ernesto. I run a small homelab, I'm learning Linux from the ground up, and I'm working towards a job in cybersecurity.
+
+This is where I write down what I learn, one layer at a time. First posts are on the way.
