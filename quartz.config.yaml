@@ -23,25 +23,26 @@ configuration:
       body: Source Sans Pro
       code: IBM Plex Mono
     colors:
+      # From the expenses app: Yeezy Bone (light), Amazonia (dark)
       lightMode:
-        light: "#faf8f8"
-        lightgray: "#e5e5e5"
-        gray: "#b8b8b8"
-        darkgray: "#4e4e4e"
-        dark: "#2b2b2b"
-        secondary: "#284b63"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
+        light: "#EDE6DA"
+        lightgray: "#D8C8AE"
+        gray: "#6F6555"
+        darkgray: "#2E2B27"
+        dark: "#2E2B27"
+        secondary: "#76604A"
+        tertiary: "#944123"
+        highlight: rgba(118, 96, 74, 0.13)
         textHighlight: "#fff23688"
       darkMode:
-        light: "#161618"
-        lightgray: "#393639"
-        gray: "#646464"
-        darkgray: "#d4d4d4"
-        dark: "#ebebec"
-        secondary: "#7b97aa"
-        tertiary: "#84a59d"
-        highlight: rgba(143, 159, 169, 0.15)
+        light: "#0E1A14"
+        lightgray: "#26382D"
+        gray: "#93A89A"
+        darkgray: "#E3EFE6"
+        dark: "#E3EFE6"
+        secondary: "#3FBF7F"
+        tertiary: "#009ccf"
+        highlight: rgba(63, 191, 127, 0.13)
         textHighlight: "#b3aa0288"
 plugins:
   - source: github:quartz-community/created-modified-date
@@ -123,12 +124,12 @@ plugins:
   - source: github:quartz-community/tag-page
     enabled: true
   - source: github:quartz-community/explorer
-    enabled: true
+    enabled: false
     layout:
       position: left
       priority: 50
   - source: github:quartz-community/graph
-    enabled: true
+    enabled: false
     layout:
       position: right
       priority: 10
@@ -195,8 +196,8 @@ plugins:
     enabled: true
     options:
       links:
-        GitHub: https://github.com/jackyzha0/quartz
-        Discord Community: https://discord.gg/cRFFHYye7t
+        GitHub: https://github.com/ernestopoca14
+        LinkedIn: https://www.linkedin.com/in/ernesto-pocasangre-kreling-01a9291b5
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer
