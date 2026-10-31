@@ -1,7 +1,7 @@
 ---
 title: "Dual-booting CachyOS on a gaming laptop, layer by layer"
 date: 2026-10-30
-tags: [computing/linux]
+tags: [type/project, computing/linux]
 description: How I put CachyOS next to Windows 11 on an MSI GF65 without breaking Windows, and what each step taught me about how a PC starts.
 ---
 
