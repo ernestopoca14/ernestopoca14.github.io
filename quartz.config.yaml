@@ -196,6 +196,7 @@ plugins:
     options:
       links:
         GitHub: https://github.com/ernestopoca14
+        LinkedIn: https://www.linkedin.com/in/ernesto-pocasangre-kreling-01a9291b5
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer
