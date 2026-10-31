@@ -250,8 +250,8 @@
     "tag-page": {
       "source": "github:quartz-community/tag-page",
       "resolved": "https://github.com/quartz-community/tag-page.git",
-      "commit": "dd0cd223c433722b3eb3ff7c93eec8eec49f76b5",
-      "installedAt": "2026-03-11T18:22:54.300Z"
+      "commit": "090748234c48e401900d9cc767c67a2c2a248fb9",
+      "installedAt": "2026-10-31T22:02:05.979Z"
     }
   }
 }
