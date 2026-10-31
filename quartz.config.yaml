@@ -23,7 +23,7 @@ configuration:
       body: Source Sans Pro
       code: IBM Plex Mono
     colors:
-      # Yeezy palette (Bone light / Onyx dark), from the expenses app
+      # From the expenses app: Yeezy Bone (light), Amazonia (dark)
       lightMode:
         light: "#EDE6DA"
         lightgray: "#D8C8AE"
@@ -35,14 +35,14 @@ configuration:
         highlight: rgba(118, 96, 74, 0.13)
         textHighlight: "#fff23688"
       darkMode:
-        light: "#191817"
-        lightgray: "#3A3734"
-        gray: "#A59D90"
-        darkgray: "#ECE4D6"
-        dark: "#ECE4D6"
-        secondary: "#C7B79A"
-        tertiary: "#bd7634"
-        highlight: rgba(199, 183, 154, 0.13)
+        light: "#0E1A14"
+        lightgray: "#26382D"
+        gray: "#93A89A"
+        darkgray: "#E3EFE6"
+        dark: "#E3EFE6"
+        secondary: "#3FBF7F"
+        tertiary: "#009ccf"
+        highlight: rgba(63, 191, 127, 0.13)
         textHighlight: "#b3aa0288"
 plugins:
   - source: github:quartz-community/created-modified-date
