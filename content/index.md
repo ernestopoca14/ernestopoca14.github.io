@@ -3,9 +3,9 @@ title: Ernesto's notes
 date: 2026-10-30
 ---
 
-Hi, I'm Ernesto. I run a small homelab, I'm learning Linux from the ground up, and I'm working towards a job in cybersecurity.
+Hi, I'm Ernesto, a mechatronics engineer with a strong interest in computer science, cybersecurity and software engineering.
 
-This is where I write down what I learn, one layer at a time. The latest posts are below.
+I use this blog to document what I learn and how I progress in the topics I'm interested in or want to upskill in. The latest posts are below.
 
 ## Posts
 
