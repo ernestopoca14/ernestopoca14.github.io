@@ -5,9 +5,9 @@ tags: [computer-science, linux, learning]
 description: Six layers, from a voltage on a wire to the operating system on my laptop, each built from the one below.
 ---
 
-I studied **mechatronics engineering**, so I'd seen most of these pieces before: digital electronics, how transistors and logic gates build a processor, a bit about memory. But each one came in a different course, in a different semester, and nobody connected them. I knew the parts, not the whole picture.
+I studied **mechatronics engineering**, so I'd studied most of these pieces before: digital electronics, how transistors and logic gates build a processor, memory, processors, etc. But each one came in a different course, in a different semester, and sometimes it's a bit hard to connect all the contents, to have the whole picture.
 
-So when I started using Linux every day, I wanted one map: **from the voltage in a transistor to my laptop running Linux**, each layer built on the one below.
+So when I started using Linux every day, I wanted to understand everything end to end: **from the voltage in a transistor to my laptop running Linux**, each layer built on the one below.
 
 | # | Layer | The idea in one line |
 |---|---|---|
