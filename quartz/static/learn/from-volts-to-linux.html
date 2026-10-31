@@ -1,0 +1,1788 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>From Volts to Linux</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a datasheet-style study page. Left rail = the layer stack (sticky), right = one long lesson per layer,
+   each with prose, a bench (interactive widget) and reference tables. Copper = signal "on", teal = structure. */
+:root{
+  --bg:#eef1ee; --panel:#f9fbf9; --ink:#14231f; --muted:#56665f; --line:#cad4ce;
+  --accent:#a8521f; --trace:#1d6b58; --live:#d9772b; --off:#aab6b0; --bad:#b3261e; --good:#1d7a4c;
+  --soft:#e3e9e5; --term-bg:#0d1412; --term-fg:#c9d6d0; --term-hi:#e9a35c;
+  --f-display:"Chakra Petch", "Bahnschrift", "Arial Narrow", system-ui, sans-serif;
+  --f-body:"Literata", Georgia, "Times New Roman", serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --step-1:clamp(2.2rem, 1.5rem + 3vw, 3.6rem); --step-2:clamp(1.55rem, 1.2rem + 1.4vw, 2.1rem); --step-3:1.2rem;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1916; --panel:#15221e; --ink:#e2ebe6; --muted:#95a89f; --line:#2a3b35;
+  --accent:#e08a4f; --trace:#4fb497; --live:#f0a052; --off:#3e504a; --bad:#ef6f62; --good:#5cc690;
+  --soft:#1b2a25; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0f1916; --panel:#15221e; --ink:#e2ebe6; --muted:#95a89f; --line:#2a3b35;
+  --accent:#e08a4f; --trace:#4fb497; --live:#f0a052; --off:#3e504a; --bad:#ef6f62; --good:#5cc690;
+  --soft:#1b2a25; color-scheme:dark; }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation:none!important; transition:none!important} }
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.65;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:0 64px}
+a{color:var(--trace)}
+h1,h2,h3,h4{font-family:var(--f-display); line-height:1.15; text-wrap:balance; margin:0}
+h2{font-size:var(--step-2)} h3{font-size:var(--step-3); margin-top:8px}
+p{margin:0}
+code,.mono{font-family:var(--f-mono); font-size:.86em}
+code{background:var(--soft); padding:1px 5px; border-radius:4px}
+button,select,input{font:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.shell{max-width:1180px; margin:0 auto; display:grid; grid-template-columns:230px minmax(0,1fr); gap:48px}
+header.hero{max-width:1180px; margin:0 auto; padding-block:48px 24px; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:40px; align-items:end}
+.eyebrow{font-family:var(--f-mono); font-size:.75rem; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+.hero h1{font-size:var(--step-1); margin-top:10px; letter-spacing:-.01em}
+.hero p.lede{margin-top:16px; max-width:60ch; color:var(--muted); font-size:1.05rem}
+.hero .how{margin-top:16px; font-size:.92rem; color:var(--muted); max-width:60ch}
+
+/* Stack in the hero */
+.stack{display:flex; flex-direction:column; gap:4px; font-family:var(--f-mono); font-size:.82rem}
+.stack a{display:grid; grid-template-columns:2.2em 1fr auto; gap:10px; align-items:center; text-decoration:none; color:var(--ink);
+  padding:9px 12px; border:1px solid var(--line); background:var(--panel); border-radius:6px; transition:transform .15s, border-color .15s}
+.stack a:hover{transform:translateX(4px); border-color:var(--accent)}
+.stack a b{font-family:var(--f-display); font-size:1rem; color:var(--accent)}
+.stack a span.k{color:var(--muted); font-size:.75rem}
+.stack .apps{opacity:.75; border-style:dashed}
+
+nav.rail{position:sticky; top:env(safe-area-inset-top, 0px); align-self:start; padding-top:24px}
+nav.rail ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; border-left:2px solid var(--line)}
+nav.rail a{display:block; padding:7px 12px; margin-left:-2px; border-left:2px solid transparent; text-decoration:none; color:var(--muted); font-family:var(--f-display); font-size:.98rem}
+nav.rail a small{display:block; font-family:var(--f-mono); font-size:.7rem; letter-spacing:.06em}
+nav.rail a.on{color:var(--ink); border-left-color:var(--accent)}
+nav.rail .tip{margin-top:20px; font-size:.82rem; color:var(--muted); line-height:1.5}
+
+main{min-width:0; display:flex; flex-direction:column; gap:72px; padding-top:24px}
+section.layer{display:flex; flex-direction:column; gap:20px; scroll-margin-top:16px}
+.layer-head{display:flex; gap:16px; align-items:baseline; border-bottom:2px solid var(--ink); padding-bottom:10px}
+.layer-head .num{font-family:var(--f-display); font-size:2.6rem; color:var(--accent); line-height:1}
+.layer-head .sub{font-family:var(--f-mono); font-size:.78rem; color:var(--muted); letter-spacing:.04em}
+.prose{display:flex; flex-direction:column; gap:14px; max-width:68ch}
+.prose ul,.prose ol{margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:6px}
+.analogy{border-left:3px solid var(--trace); padding:4px 0 4px 16px; font-style:italic; color:var(--muted); max-width:66ch}
+
+/* Bench = interactive widget */
+.bench{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; display:flex; flex-direction:column; gap:14px; min-width:0}
+.bench-head{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline}
+.bench-head h4{font-size:1.05rem}
+.bench-head .tag{font-family:var(--f-mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--trace)}
+.bench .hint{font-size:.9rem; color:var(--muted); max-width:70ch}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.btn{border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:6px; padding:6px 12px; font-family:var(--f-mono); font-size:.82rem}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent); border-color:var(--accent); color:var(--panel)}
+.btn.sel{border-color:var(--accent); color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.readout{display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:10px}
+.readout div{border:1px solid var(--line); border-radius:6px; padding:8px 10px; background:var(--bg)}
+.readout small{display:block; font-family:var(--f-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.readout b{font-family:var(--f-mono); font-size:1.15rem; font-variant-numeric:tabular-nums}
+label.sl{display:flex; flex-direction:column; gap:4px; font-family:var(--f-mono); font-size:.78rem; color:var(--muted); min-width:180px; flex:1}
+label.sl input{accent-color:var(--accent); width:100%}
+canvas{display:block; width:100%; border-radius:6px; background:var(--bg)}
+svg{display:block; max-width:100%; height:auto}
+.scroll{overflow-x:auto; min-width:0}
+
+/* Tables */
+table{border-collapse:collapse; width:100%; font-size:.92rem}
+th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:600}
+td.num{font-family:var(--f-mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+.mine{border:1px dashed var(--trace); border-radius:10px; padding:14px 16px; display:flex; flex-direction:column; gap:8px; max-width:72ch}
+.mine h4{font-size:.95rem; color:var(--trace)}
+.mine .cmds{list-style:none; padding-left:0; margin:6px 0 0; display:flex; flex-direction:column; gap:6px}
+.mine .cmds code{overflow-wrap:anywhere}
+.mine p,.mine li{font-size:.94rem}
+.mine ul{margin:0; padding-left:1.2em}
+.check{border-top:1px solid var(--line); padding-top:12px; max-width:72ch}
+.check-title{font-family:var(--f-display); font-size:1rem}
+.check .hint{margin:4px 0 0}
+.check ol{margin:10px 0 0; padding-left:1.3em; display:flex; flex-direction:column; gap:12px}
+.check li span{display:block; color:var(--muted); font-size:.92rem; margin-top:4px}
+.check details.ans summary{display:inline-block; margin-top:4px; cursor:pointer; list-style:none; font-family:var(--f-mono); font-size:.78rem; color:var(--accent)}
+.check details.ans summary::-webkit-details-marker{display:none}
+.check details.ans[open] summary{color:var(--muted)}
+
+/* Bits */
+.byte{display:grid; grid-template-columns:repeat(8, minmax(0,1fr)); gap:6px}
+.bit{display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 0 6px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--muted); font-family:var(--f-mono)}
+.bit b{font-size:1.5rem; color:var(--ink)}
+.bit small{font-size:.66rem}
+.bit.on{background:var(--live); border-color:var(--live); color:var(--panel)}
+.bit.on b{color:var(--panel)}
+.swatch{width:100%; height:28px; border-radius:4px; border:1px solid var(--line)}
+.bitstr{font-family:var(--f-mono); font-size:1rem; letter-spacing:.25em; display:flex; gap:4px; flex-wrap:wrap}
+.bitstr span{padding:2px 6px; border-radius:4px; background:var(--bg); border:1px solid var(--line)}
+.bitstr span.err{background:var(--bad); color:var(--panel); border-color:var(--bad)}
+
+/* Gates */
+.lamp{width:46px; height:46px; border-radius:50%; border:2px solid var(--line); background:var(--bg); display:grid; place-items:center; font-family:var(--f-mono); font-weight:600}
+.lamp.on{background:var(--live); border-color:var(--live); color:var(--panel); box-shadow:0 0 18px var(--live)}
+.tt td,.tt th{text-align:center; font-family:var(--f-mono)}
+.tt tr.cur td{background:var(--soft); color:var(--accent); font-weight:600}
+.wire{fill:none; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; transition:stroke .15s}
+.gbody{fill:var(--panel); stroke:var(--ink); stroke-width:2.5}
+.adder{display:grid; grid-template-columns:auto repeat(5, minmax(36px, 52px)); gap:6px; align-items:center; font-family:var(--f-mono); justify-content:start}
+.adder .lab{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; padding-right:6px}
+.adder .c{height:42px; display:grid; place-items:center; border-radius:6px; border:1px solid var(--line); background:var(--bg); font-size:1.1rem}
+.adder button.c.on{background:var(--live); border-color:var(--live); color:var(--panel)}
+.adder .c.carry{font-size:.85rem; color:var(--muted); border-style:dashed}
+.adder .c.carry.on{color:var(--accent); border-color:var(--accent)}
+.adder .c.sum{font-weight:600}
+.adder .c.sum.on{background:var(--trace); border-color:var(--trace); color:var(--panel)}
+.adder .rule{grid-column:2 / -1; height:2px; background:var(--ink)}
+.adder .blank{visibility:hidden}
+
+/* Memory */
+.hier{display:flex; flex-direction:column; gap:8px}
+.hier .h{display:grid; grid-template-columns:110px minmax(0,1fr) 120px; gap:10px; align-items:center; font-size:.88rem}
+.hier .h .bar{height:20px; border-radius:3px; background:linear-gradient(90deg, var(--trace), var(--live)); min-width:4px}
+.hier .h .v{font-family:var(--f-mono); font-size:.8rem; text-align:right; font-variant-numeric:tabular-nums}
+.hier .h .n{font-family:var(--f-display)}
+
+/* CPU */
+.cpu{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:16px}
+.mem table{font-family:var(--f-mono); font-size:.8rem}
+.mem td,.mem th{padding:4px 8px}
+.mem tr.pc td{background:var(--soft); color:var(--accent); font-weight:600}
+.mem tr.pc td:first-child::before{content:"▶ "}
+.mem tr.touch td{outline:2px solid var(--trace); outline-offset:-2px}
+.core{display:flex; flex-direction:column; gap:10px}
+.phases{display:grid; grid-template-columns:repeat(4,1fr); gap:4px; font-family:var(--f-mono); font-size:.72rem; text-align:center}
+.phases div{padding:6px 2px; border-radius:4px; border:1px solid var(--line); color:var(--muted)}
+.phases div.on{background:var(--accent); border-color:var(--accent); color:var(--panel)}
+.regs{display:grid; grid-template-columns:repeat(4,1fr); gap:6px}
+.regs div{border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:var(--bg); font-family:var(--f-mono)}
+.regs div.hot{border-color:var(--live); box-shadow:inset 0 0 0 1px var(--live)}
+.regs small{display:block; font-size:.66rem; color:var(--muted)}
+.regs b{font-size:1.1rem}
+.ir{display:flex; gap:4px; flex-wrap:wrap; font-family:var(--f-mono); font-size:.8rem}
+.ir span{padding:4px 7px; border-radius:4px; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; background:var(--bg)}
+.ir span small{font-size:.62rem; color:var(--muted)}
+.ir span.op{border-color:var(--accent); color:var(--accent)}
+.alu{border:2px solid var(--ink); border-radius:6px 6px 40px 40px; padding:8px; text-align:center; font-family:var(--f-mono); min-height:56px}
+.alu small{display:block; font-size:.66rem; color:var(--muted); letter-spacing:.1em}
+.explain{font-size:.92rem; background:var(--bg); border-radius:6px; padding:10px 12px; border:1px solid var(--line); min-height:64px}
+.pipe{display:grid; gap:3px; font-family:var(--f-mono); font-size:.7rem}
+.pipe div{height:26px; display:grid; place-items:center; border-radius:3px}
+.pipe .lbl{justify-content:start; color:var(--muted); padding-right:6px; white-space:nowrap}
+.pipe .F{background:var(--trace); color:var(--panel)} .pipe .D{background:color-mix(in srgb, var(--trace) 55%, var(--live)); color:var(--panel)}
+.pipe .E{background:var(--live); color:var(--panel)} .pipe .W{background:var(--accent); color:var(--panel)}
+.pipe .hd{color:var(--muted)}
+
+/* Boot */
+.chain{display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:6px}
+.chain button{border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:6px; padding:10px 6px; font-family:var(--f-display); font-size:.9rem; display:flex; flex-direction:column; gap:2px; align-items:center; text-align:center}
+.chain button small{font-family:var(--f-mono); font-size:.62rem; color:var(--muted)}
+.chain button.on{border-color:var(--accent); background:var(--accent); color:var(--panel)}
+.chain button.on small{color:var(--panel)}
+.chain button.done{border-color:var(--trace)}
+.stage{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px}
+.stage div{border:1px solid var(--line); border-radius:6px; padding:10px 12px; background:var(--bg); font-size:.9rem}
+.stage small{display:block; font-family:var(--f-mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:2px}
+.ram{display:flex; height:34px; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--bg); font-family:var(--f-mono); font-size:.7rem}
+.boot-wrap{overflow-x:auto}
+#boot-svg{min-width:460px}
+#boot-svg .pwr{transform-box:fill-box; transform-origin:center; transition:transform .12s}
+#boot-svg .pwr.down{transform:scale(.88)}
+.ram div{display:grid; place-items:center; color:var(--panel); white-space:nowrap; overflow:hidden; transition:flex-basis .4s}
+.disk{display:flex; height:46px; border-radius:6px; overflow:hidden; border:1px solid var(--line); font-family:var(--f-mono); font-size:.72rem}
+.disk div{display:grid; place-items:center; color:var(--panel); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.term{background:var(--term-bg); color:var(--term-fg); font-family:var(--f-mono); font-size:.8rem; border-radius:8px; padding:16px; min-height:250px; line-height:1.5}
+.term .ttl{text-align:center; color:var(--term-fg); opacity:.7; margin-bottom:10px}
+.term .box{border:1px solid #3c4a45; padding:8px 0}
+.term .it{padding:1px 12px; cursor:pointer; white-space:pre; overflow:hidden; text-overflow:ellipsis}
+.term .it.sel{background:var(--term-fg); color:var(--term-bg)}
+.term pre{margin:0; white-space:pre; overflow-x:auto}
+.term .hi{color:var(--term-hi)}
+.term .foot{margin-top:10px; opacity:.7; font-size:.72rem; white-space:normal}
+.notes{display:flex; flex-direction:column; gap:6px; font-size:.88rem}
+.notes div{display:grid; grid-template-columns:150px minmax(0,1fr); gap:10px}
+.notes code{white-space:nowrap}
+
+/* OS */
+.lanes{display:grid; grid-template-rows:repeat(3, 54px); gap:4px; position:relative}
+.lanes .lane{border-radius:6px; display:flex; align-items:center; padding:0 12px; font-family:var(--f-mono); font-size:.76rem; color:var(--muted); border:1px solid var(--line); background:var(--bg); transition:background .2s, color .2s}
+.lanes .lane.on{background:var(--accent); color:var(--panel); border-color:var(--accent)}
+.steps{display:flex; flex-direction:column; gap:4px; counter-reset:s; margin:0; padding:0; list-style:none}
+.steps li{display:grid; grid-template-columns:28px 92px minmax(0,1fr); gap:8px; padding:6px 8px; border-radius:6px; font-size:.88rem; color:var(--muted); cursor:pointer}
+.steps li::before{counter-increment:s; content:counter(s); font-family:var(--f-mono); font-size:.8rem}
+.steps li .who{font-family:var(--f-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; padding-top:2px}
+.steps li.on{background:var(--soft); color:var(--ink)}
+.steps li.on .who{color:var(--accent)}
+.plist{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:6px}
+.plist div{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:.85rem; background:var(--bg)}
+.plist i{width:12px; height:12px; border-radius:3px; flex:none}
+.plist .st{margin-left:auto; font-family:var(--f-mono); font-size:.68rem; text-transform:uppercase}
+.st.running{color:var(--good)} .st.ready{color:var(--accent)} .st.waiting{color:var(--muted)}
+.ringinfo{min-height:96px}
+.vmmsg{font-family:var(--f-mono); font-size:.85rem; padding:10px 12px; border-radius:6px; background:var(--bg); border:1px solid var(--line); min-height:44px}
+.vmmsg.bad{border-color:var(--bad); color:var(--bad)}
+
+footer.end{max-width:1180px; margin:72px auto 0; border-top:2px solid var(--ink); padding-top:16px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-size:.9rem; color:var(--muted)}
+
+@media (max-width: 900px){
+  header.hero{grid-template-columns:minmax(0,1fr); padding-top:28px}
+  .shell{grid-template-columns:minmax(0,1fr); gap:0}
+  nav.rail{z-index:5; background:var(--bg); padding:8px 0; border-bottom:1px solid var(--line)}
+  body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top, 0px); z-index:10; background:var(--bg)}
+  nav.rail ol{flex-direction:row; overflow-x:auto; border-left:0; gap:4px}
+  nav.rail a{border-left:0; border-bottom:2px solid transparent; margin:0; white-space:nowrap; padding:6px 10px}
+  nav.rail a.on{border-bottom-color:var(--accent)}
+  nav.rail .tip{display:none}
+  .cpu{grid-template-columns:minmax(0,1fr)}
+  .chain{grid-template-columns:repeat(3, minmax(0,1fr))}
+  .hier .h{grid-template-columns:84px minmax(0,1fr) 92px}
+  .notes div{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width: 480px){
+  body{font-size:16px}
+  .byte{gap:3px} .bit b{font-size:1.15rem}
+  .regs{grid-template-columns:repeat(2,1fr)}
+  .steps li{grid-template-columns:22px minmax(0,1fr)} .steps li .who{grid-column:2}
+}
+</style>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Study bench · computer science from the ground up</div>
+    <h1>From Volts to Linux</h1>
+    <p class="lede">How a box of switches becomes a computer that boots Linux and runs your apps. Six layers, each built from the one below. Every layer has a bench where you can flip bits, wire gates, step the CPU and watch the boot chain yourself.</p>
+    <p class="how">How to use it: read a layer, play with its bench until the result stops surprising you, then answer the self-check questions at the end of it. Come up with your own answer first, then click <b>Show answer</b> to compare. The examples use your own machines: the MSI GF65 (i7-10750H, 16 GB, 512 GB SSD), the CachyOS dual boot, and the Proxmox homelab. The commands work in both bash and fish (CachyOS's default shell). Each grey box is one command: paste and run them one at a time. Animations start when you reach them or press their button, and stop on their own after 30 seconds or when you scroll away. Each has a Start/Stop or Play/Pause button. If one says "command not found", install it with <code>sudo pacman -S</code> followed by its name.</p>
+  </div>
+  <div class="stack" aria-label="The layers, top to bottom">
+    <a class="apps" href="#os"><b>7</b><span>Apps you use</span><span class="k">Steam · FreeCAD</span></a>
+    <a href="#os"><b>6</b><span>Operating system</span><span class="k">kernel, scheduler</span></a>
+    <a href="#boot"><b>5</b><span>Firmware and boot</span><span class="k">UEFI → GRUB</span></a>
+    <a href="#cpu"><b>4</b><span>The CPU</span><span class="k">fetch · decode · execute</span></a>
+    <a href="#memory"><b>3</b><span>Memory</span><span class="k">loops that remember</span></a>
+    <a href="#gates"><b>2</b><span>Logic</span><span class="k">transistors → gates</span></a>
+    <a href="#bits"><b>1</b><span>Bits</span><span class="k">voltage → 1 or 0</span></a>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="rail" aria-label="Layers">
+  <ol>
+    <li><a href="#bits"><small>Layer 1</small>Bits and signals</a></li>
+    <li><a href="#gates"><small>Layer 2</small>Transistors and gates</a></li>
+    <li><a href="#memory"><small>Layer 3</small>Memory</a></li>
+    <li><a href="#cpu"><small>Layer 4</small>The CPU</a></li>
+    <li><a href="#boot"><small>Layer 5</small>Firmware and boot</a></li>
+    <li><a href="#os"><small>Layer 6</small>The operating system</a></li>
+  </ol>
+  <p class="tip">The big idea behind every layer is <b>abstraction</b>: each one hides the details of the layer below, so you can think about one level at a time.</p>
+</nav>
+
+<main>
+
+<!-- ============================ LAYER 1 ============================ -->
+<section class="layer" id="bits">
+  <div class="layer-head"><span class="num">1</span><div><h2>Bits and signals</h2><div class="sub">voltage → 1/0 → numbers, letters, colors, sound</div></div></div>
+  <div class="prose">
+    <p>Everything a computer stores or does is made of <b>bits</b>. A bit is a single yes/no value, written 1 or 0. Physically it is a voltage on a tiny wire: clearly high means 1, clearly low means 0. That's all a computer has to work with.</p>
+    <p>One bit can only say two things. But bits multiply: 2 bits give 4 patterns (00, 01, 10, 11), 3 bits give 8, and every extra bit doubles the count. 8 bits, called a <b>byte</b>, give 256 patterns. That is enough for every letter, digit and symbol on your keyboard, or for 256 shades of one color.</p>
+    <p>Binary counting works like normal counting, but each column is worth double the one to its right instead of ten times. In decimal, <code>305</code> means 3×100 + 0×10 + 5×1. In binary, <code>101</code> means 1×4 + 0×2 + 1×1 = 5. Try it on the bench: click the bits and watch the same pattern turn into a number, a letter and a shade of grey.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>One byte, four meanings</h4><span class="tag">bench 1.1</span></div>
+    <p class="hint">Click a bit to flip it. The number under each bit is what that column is worth. The pattern itself never changes meaning; the program reading it decides whether it's a number, a letter or a color.</p>
+    <div class="byte" id="byte"></div>
+    <div class="readout">
+      <div><small>As a number</small><b id="b-dec">65</b></div>
+      <div><small>In hex</small><b id="b-hex">0x41</b></div>
+      <div><small>As a letter (ASCII)</small><b id="b-chr">A</b></div>
+      <div><small>As a grey pixel</small><div class="swatch" id="b-sw"></div></div>
+    </div>
+    <div class="row">
+      <button class="btn" data-byte="65">Letter A</button>
+      <button class="btn" data-byte="97">Letter a</button>
+      <button class="btn" data-byte="48">Digit 0</button>
+      <button class="btn" data-byte="255">All on (255)</button>
+      <button class="btn" data-byte="0">All off</button>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>Why only two values?</h3>
+    <p>Here's the part we talked about: underneath, the world is <b>analog</b>. The voltage on a wire is a smooth, continuous quantity, and it wobbles with heat and electrical noise. So chips use <b>thresholds</b>. Above a "high" line counts as 1, below a "low" line counts as 0, and the zone in between is forbidden. As long as noise doesn't push a signal across that gap, the bit reads perfectly.</p>
+    <p>That's the real reason computers are digital. Ten possible voltage levels would pack more information per wire, but they'd sit so close together that the smallest noise would turn a 6 into a 7. With two levels far apart, the chip can ignore almost all noise, and a copy of a copy of a copy is still perfect.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Noise vs thresholds</h4><span class="tag">bench 1.2</span></div>
+    <p class="hint">A wire sends the bits <span class="mono">10110010</span> on a 3.3 V chip. The receiver reads one sample in the middle of each bit (the dots). Raise the noise and watch when reading starts to fail. The shaded band is the forbidden zone, where the chip can't tell 1 from 0.</p>
+    <canvas id="volt" style="height:220px" aria-label="Noisy voltage signal with thresholds"></canvas>
+    <div class="row">
+      <label class="sl" for="noise">Electrical noise: <span id="noise-v">0.15 V</span><input id="noise" type="range" min="0" max="1.4" step="0.05" value="0.15"></label>
+      <button class="btn" id="volt-again">Send again</button>
+    </div>
+    <div class="row"><span class="mono" style="font-size:.8rem;color:var(--muted);min-width:4.5em">Sent</span><div class="bitstr" id="sent"></div></div>
+    <div class="row"><span class="mono" style="font-size:.8rem;color:var(--muted);min-width:4.5em">Read</span><div class="bitstr" id="read"></div></div>
+  </div>
+
+  <div class="prose">
+    <h3>Turning the analog world into bits: sound</h3>
+    <p>Sound is air pressure going up and down smoothly. A microphone turns it into a smooth voltage. To store it as bits, the computer does two things:</p>
+    <ol>
+      <li><b>Sampling:</b> measure the wave at regular moments. CD audio measures 44,100 times per second.</li>
+      <li><b>Quantization:</b> round each measurement to the nearest allowed level. CD audio uses 16 bits per measurement, so 65,536 levels.</li>
+    </ol>
+    <p>The surprising part is the <b>Nyquist–Shannon theorem</b>: if you sample more than twice as fast as the fastest wiggle in the sound, the samples hold enough information to rebuild the wave <i>exactly</i>, not approximately. Human hearing tops out around 20,000 wiggles per second (20 kHz), which is why 44,100 was chosen. Only the rounding step loses anything, and at 16 bits that error is about 96 dB quieter than the loudest sound.</p>
+    <p>Below Nyquist, something strange happens: the samples can't tell a fast wiggle from a slow one, and the rebuilt sound contains a wrong, lower tone. That is called <b>aliasing</b>. It's the same effect that makes car wheels look like they spin backwards in videos.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Sample and round a sound wave</h4><span class="tag">bench 1.3</span></div>
+    <p class="hint">The thin line is the real sound (two tones mixed, the faster one wiggles 7 times in this window). Dots are samples, the staircase is what's stored after rounding. Turn on <b>smooth playback</b> to see what a real sound card rebuilds from the stored numbers. Drop the samples below 15 and watch aliasing appear.</p>
+    <canvas id="samp" style="height:260px" aria-label="Sound wave sampling and quantization"></canvas>
+    <div class="row">
+      <label class="sl" for="sr">Samples in this window: <span id="sr-v">24</span><input id="sr" type="range" min="4" max="64" step="1" value="24"></label>
+      <label class="sl" for="bd">Bits per sample: <span id="bd-v">4 bits = 16 levels</span><input id="bd" type="range" min="1" max="8" step="1" value="4"></label>
+    </div>
+    <div class="row">
+      <button class="btn sel" id="show-stair" aria-pressed="true">Stored staircase</button>
+      <button class="btn" id="show-smooth" aria-pressed="false">Smooth playback</button>
+      <span class="mono" id="samp-msg" style="font-size:.82rem"></span>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>Vinyl vs digital</h3>
+    <p>A vinyl record is also a representation: a groove whose wiggles copy the sound wave. It's analog, but that doesn't make it more accurate. Measured against a CD:</p>
+  </div>
+  <div class="scroll"><table>
+    <tr><th>Property</th><th>Vinyl</th><th>CD (16-bit, 44.1 kHz)</th></tr>
+    <tr><td>Background noise</td><td>Crackle, hiss, surface noise</td><td>Effectively silent</td></tr>
+    <tr><td>Dynamic range (quietest → loudest)</td><td class="num">~60–70 dB</td><td class="num">~96 dB</td></tr>
+    <tr><td>Wear</td><td>A little worse every play</td><td>Identical on the millionth play</td></tr>
+    <tr><td>Speed stability</td><td>Slight wobble (wow and flutter)</td><td>Crystal-locked</td></tr>
+    <tr><td>Where it comes from today</td><td colspan="2">Most modern vinyl is cut from a <b>digital</b> master, so it can't hold more than the digital file did.</td></tr>
+  </table></div>
+  <div class="prose"><p>People who prefer vinyl aren't wrong about what they hear: vinyl masters are often less compressed than streaming masters, the format adds a soft "warm" distortion many people like, and the ritual changes how you listen. That's preference, and it's valid. But it's not more fidelity. The habit worth keeping from this: always ask <i>"is this the thing itself, or a representation of it?"</i></p></div>
+
+  <div class="mine">
+    <h4>On your machines</h4>
+    <ul>
+      <li>Your i7 is a <b>64-bit</b> CPU: it handles numbers 64 bits wide in one step. 2⁶⁴ is about 18 quintillion.</li>
+      <li>Try on Linux, one at a time:<ul class="cmds">
+        <li><code>echo -n "Hi" | xxd -b</code> shows the bits of "H" and "i".</li>
+        <li><code>math '2^10'</code> is fish's built-in calculator: 1024 patterns from 10 bits. Keep the quotes so fish doesn't read <code>^</code> or <code>*</code> as shell syntax.</li>
+        <li><code>bash -c 'echo $((2#101))'</code> turns binary 101 into decimal and prints 5. <code>$(( ))</code> is bash's maths syntax, so the <code>bash -c '…'</code> wrapper makes it work from fish too.</li>
+      </ul></li>
+      <li>Any sound file: <code>ffprobe -hide_banner /usr/share/sounds/alsa/Front_Center.wav</code> (the speaker-test voice that comes with ALSA) prints <code>48000 Hz, 1 channels, s16</code>: 48,000 samples per second, mono, 16 bits per sample. <code>ffprobe</code> comes with ffmpeg and works the same on music or a movie's audio track.</li>
+    </ul>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 1"><div class="check-title">Self-check: Layer 1</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>How many patterns can 10 bits make?<details class="ans"><summary>Show answer</summary><span>2¹⁰ = 1,024. Each extra bit doubles the count.</span></details></li>
+    <li>Why can a digital file be copied endlessly without losing quality?<details class="ans"><summary>Show answer</summary><span>The reader only has to tell "clearly high" from "clearly low", so small noise is ignored and every copy is exact. An analog copy copies the noise too, and it adds up.</span></details></li>
+    <li>On bench 1.3, why does the smooth playback go wrong below ~15 samples?<details class="ans"><summary>Show answer</summary><span>The fastest tone wiggles 7 times in the window. Nyquist says you need more than 2 × 7 = 14 samples. Below that, the samples fit a slower wave just as well, and that wrong wave is what gets rebuilt (aliasing).</span></details></li>
+    <li>Which step of digitizing actually loses information?<details class="ans"><summary>Show answer</summary><span>Quantization (rounding). Sampling above the Nyquist rate is lossless in theory.</span></details></li>
+  </ol></div>
+</section>
+
+<!-- ============================ LAYER 2 ============================ -->
+<section class="layer" id="gates">
+  <div class="layer-head"><span class="num">2</span><div><h2>Transistors and logic gates</h2><div class="sub">switch → gate → adder → ALU</div></div></div>
+  <div class="prose">
+    <p>Bits are voltages. To <i>do</i> something with them, you need switches that can be controlled by other bits. That switch is the <b>transistor</b>, and it's the single most important invention behind computers.</p>
+    <p>A transistor has three connections. Current wants to flow from the <b>source</b> to the <b>drain</b>, but a third connection, the <b>gate</b>, decides whether it can. Put voltage on the gate and the path opens. Take it away and the path closes. No moving parts: the gate's voltage changes how the silicon itself conducts.</p>
+    <p class="analogy">A water pipe with a valve, where the valve is opened by water pressure from a different pipe. Because the "valve" is controlled by the same thing that flows through the pipe, the output of one switch can open the next one. That's what lets you chain billions of them.</p>
+    <p><b>What the silicon is made of.</b> Pure silicon barely conducts. Chipmakers mix in a tiny amount of other atoms, which is called <b>doping</b>. Phosphorus adds spare electrons that can move freely: that's <b>n-type</b> silicon (n for negative). Boron leaves gaps where an electron is missing, called <b>holes</b>, and they move around like positive charges: that's <b>p-type</b>. A transistor is a sandwich of the two, n then p then n, with the gate sitting on top of the p part. Its mirror image (p, n, p) switches on when the gate gets 0 instead of 1, and chips pair the two kinds. That pairing is why chips are called <b>CMOS</b>.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>A transistor, close up</h4><span class="tag">bench 2.1</span></div>
+    <p class="hint">This is an n-channel transistor (NMOS), the kind chips are full of. <b>Simple</b> shows what it does: a switch. <b>Inside the silicon</b> cuts it open from the side to show how it does it. Click the gate to put voltage on it, then flip between the two views.</p>
+    <div class="row" role="group" aria-label="How to draw the transistor"><button class="btn sel" id="tr-simple" aria-pressed="true">Simple: a switch</button><button class="btn" id="tr-inside" aria-pressed="false">Inside the silicon</button></div>
+    <svg id="tr" viewBox="0 0 520 256" role="img" aria-label="A transistor drawn as a switch between source and drain, closed by the gate"></svg>
+    <p class="hint" id="tr-why"></p>
+    <div class="row"><button class="btn pri" id="tr-btn">Gate: OFF (0 V), tap to switch on</button><span class="mono" id="tr-msg" style="font-size:.85rem"></span></div>
+  </div>
+
+  <div class="prose">
+    <p>Modern transistors are made in silicon and are almost unimaginably small. Your i7-10750H was made on Intel's 14 nm process and has several billion of them; a recent phone chip has over 15 billion. They switch billions of times per second.</p>
+    <h3>Gates: switches wired into logic</h3>
+    <p>Wire two transistors <b>in a row</b> (series) and current only gets through if <i>both</i> are on. That's an <b>AND</b> gate. Wire them <b>side by side</b> (parallel) and current gets through if <i>either</i> is on. That's an <b>OR</b> gate. A slightly different arrangement flips the input: <b>NOT</b>. These tiny circuits are called <b>logic gates</b>, and they're where electricity starts behaving like logic.</p>
+    <p>The gate doesn't "understand" AND. The wires are simply arranged so that electricity physically can't get through unless both switches are closed.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Gate playground</h4><span class="tag">bench 2.2</span></div>
+    <p class="hint">Pick a gate, then click the inputs A and B. Copper wires carry a 1. The truth table highlights the row you're on, and the switch view shows how each gate is wired from switches.</p>
+    <div class="row" id="g-pick"></div>
+    <div class="row" style="align-items:center; gap:16px">
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <button class="btn" id="g-a">A = 0</button>
+        <button class="btn" id="g-b">B = 0</button>
+      </div>
+      <svg id="g-svg" viewBox="0 0 220 120" style="width:260px" role="img" aria-label="Logic gate"></svg>
+      <div class="lamp" id="g-out">0</div>
+    </div>
+    <div class="row" style="align-items:flex-start; gap:20px">
+      <table class="tt" id="g-tt" style="width:auto"></table>
+      <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:6px">
+        <div class="mono" style="font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)">Switch view</div>
+        <svg id="g-sw" viewBox="0 0 300 130" style="max-width:340px" role="img" aria-label="Switch view of the gate"></svg>
+        <p class="hint" id="g-desc"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>From gates to arithmetic</h3>
+    <p>Here is the "aha" moment of computer science. Adding two single bits has only four cases. In binary, 1 + 1 = <code>10</code> (two), so you write 0 and carry 1, just like 5 + 5 = 10 in decimal.</p>
+  </div>
+  <div class="scroll"><table class="tt" style="max-width:420px">
+    <tr><th>A</th><th>B</th><th>Sum</th><th>Carry</th></tr>
+    <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+    <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+  </table></div>
+  <div class="prose"><p>Look at the columns. <b>Sum</b> is 1 only when the inputs differ: that's exactly XOR. <b>Carry</b> is 1 only when both are 1: that's exactly AND. So one XOR plus one AND <i>is</i> an adding machine for one column. It's called a <b>half adder</b>.</p></div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Half adder</h4><span class="tag">bench 2.3</span></div>
+    <p class="hint">Flip A and B. The same two inputs feed both gates.</p>
+    <svg id="ha" viewBox="0 0 470 230" role="img" aria-label="Half adder circuit"></svg>
+    <div class="row"><button class="btn" id="ha-a">A = 0</button><button class="btn" id="ha-b">B = 0</button><span class="mono" id="ha-eq" style="font-size:.95rem"></span></div>
+  </div>
+
+  <div class="prose"><p>To add bigger numbers, chain them. A <b>full adder</b> adds two bits <i>plus</i> the carry coming from the column to its right. Line up four and you can add 4-bit numbers; line up 64 and you have the adder inside your CPU. The carry ripples from right to left exactly like when you add on paper.</p></div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>4-bit adder, like on paper</h4><span class="tag">bench 2.4</span></div>
+    <p class="hint">Click bits in the two top rows. Carries (dashed) ripple leftward. 4 bits can hold 0 to 15; go above 15 and the fifth column lights up, which is called an <b>overflow</b>.</p>
+    <div class="scroll"><div class="adder" id="adder"></div></div>
+    <div class="mono" id="add-eq" style="font-size:1rem"></div>
+  </div>
+
+  <div class="prose">
+    <h3>Everything else is built from this</h3>
+    <ul>
+      <li><b>Subtraction</b> is adding a negative number, stored with a trick called two's complement, so the same adder is reused.</li>
+      <li><b>Multiplication</b> is shifting and adding, like long multiplication.</li>
+      <li><b>Comparison</b> ("is A bigger than B?") is subtracting and checking whether the result is negative or zero.</li>
+      <li><b>Choosing</b> is done by gates that route a signal one way or another (a multiplexer).</li>
+    </ul>
+    <p>Bundle all of these into one block and you get the <b>ALU</b> (Arithmetic Logic Unit), the part of the CPU that actually calculates. One more surprising fact: the <b>NAND</b> gate (AND followed by NOT) is <i>universal</i>. You can build every other gate, and therefore a whole computer, out of NANDs alone. The free course <a href="https://www.nand2tetris.org" target="_blank" rel="noopener">Nand to Tetris</a> does exactly that, step by step.</p>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 2"><div class="check-title">Self-check: Layer 2</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>What makes a transistor different from a wall light switch?<details class="ans"><summary>Show answer</summary><span>It's flipped by a voltage instead of a finger, so one transistor's output can control another. That's what makes chaining possible.</span></details></li>
+    <li>Two switches in series make which gate? In parallel?<details class="ans"><summary>Show answer</summary><span>Series = AND (both must be closed). Parallel = OR (either one is enough).</span></details></li>
+    <li>Which two gates form a half adder?<details class="ans"><summary>Show answer</summary><span>XOR gives the sum, AND gives the carry.</span></details></li>
+    <li>On bench 2.4, set 1111 + 0001. What happens and why?<details class="ans"><summary>Show answer</summary><span>Every column carries, the result 10000 needs a fifth bit. In a 4-bit machine that's an overflow: the 4 bits show 0000.</span></details></li>
+  </ol></div>
+</section>
+
+<!-- ============================ LAYER 3 ============================ -->
+<section class="layer" id="memory">
+  <div class="layer-head"><span class="num">3</span><div><h2>Memory</h2><div class="sub">loops that remember · the clock · registers · RAM · flash</div></div></div>
+  <div class="prose">
+    <p>Every circuit in Layer 2 only <b>reacts</b>. An AND gate's output depends on its inputs right now. Change the inputs and the old answer is gone. A machine made only of these could add, but it couldn't remember the result, keep a program, or know which step it's on.</p>
+    <p>The trick that gives circuits memory is a <b>loop</b>: feed a circuit's output back into its own input. Two gates wired in a circle can hold each other in place, like two people leaning back to back. Neither one needs pushing; the pair stays put. That stable state <i>is</i> a stored bit.</p>
+    <p>Give that loop two control wires, <b>Set</b> and <b>Reset</b>, and you can change what it holds. This circuit is called an <b>SR latch</b>. A normal gate is like a doorbell button: it works only while pressed. A latch is like a light switch: it stays where you left it.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>SR latch: a bit that remembers</h4><span class="tag">bench 3.1</span></div>
+    <p class="hint">Two NOR gates (OR followed by NOT), each feeding the other. Press <b>Set</b>: Q becomes 1 and <i>stays 1</i> after you let go. Press <b>Reset</b>: Q becomes 0 and stays. Then cut the power.</p>
+    <svg id="latch" viewBox="0 0 520 250" role="img" aria-label="SR latch circuit"></svg>
+    <div class="row">
+      <button class="btn pri" id="l-set">Pulse Set</button>
+      <button class="btn pri" id="l-reset">Pulse Reset</button>
+      <button class="btn" id="l-power">Cut power</button>
+      <span class="mono" id="l-msg" style="font-size:.85rem"></span>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>The clock: everyone saves on the beat</h3>
+    <p>A CPU has billions of these storage cells, and signals race through gates at slightly different speeds. If every cell saved whenever its input changed, some would catch half-finished results. The fix is a <b>clock</b>: one signal that ticks between 0 and 1 at a steady rate, sent to every storage cell.</p>
+    <p>A <b>flip-flop</b> is a latch that only copies its input at the exact moment the clock rises. Between ticks, the gates calculate and the results settle. On the tick, every flip-flop saves at once. Your i7's clock runs up to 5.0 GHz in boost, which is 5 billion ticks per second.</p>
+    <p class="analogy">An orchestra and a conductor. Musicians can prepare their next note whenever they like, but they all play it on the beat.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Flip-flop timing diagram</h4><span class="tag">bench 3.2</span></div>
+    <p class="hint">Top: the clock. Middle: the data input D, which you control. Bottom: the stored output Q. Flip D at random moments and notice that Q only changes on a rising clock edge (dashed lines), never in between.</p>
+    <canvas id="ff" style="height:200px" aria-label="Clock, data and output waveforms"></canvas>
+    <div class="row">
+      <button class="btn pri" id="ff-d">Flip D (now 0)</button>
+      <button class="btn" id="ff-play">Pause</button>
+      <label class="sl" for="ff-speed" style="max-width:240px">Clock speed<input id="ff-speed" type="range" min="1" max="4" step="1" value="2"></label>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>Put 64 flip-flops side by side on the same clock and they hold one 64-bit number. That's a <b>register</b>. Registers live inside the CPU and are its fastest memory; an x86-64 core has 16 general-purpose ones. They're the CPU's hands: numbers come into registers, go through the ALU, and the result lands in another register, all in one tick.</p>
+    <h3>Different memories, different physics</h3>
+    <p>A flip-flop needs about 6 to 20 transistors per bit, which is too expensive for gigabytes. So computers use several kinds of memory, each storing a bit in a different physical way:</p>
+  </div>
+  <div class="scroll"><table>
+    <tr><th>Memory</th><th>How one bit is stored</th><th>Keeps data without power?</th><th>Trade-off</th></tr>
+    <tr><td><b>Registers, cache</b> (SRAM)</td><td>A loop of ~6 transistors holding itself, like bench 3.1</td><td>No</td><td>Very fast, expensive, takes chip space</td></tr>
+    <tr><td><b>RAM</b> (DRAM)</td><td>A tiny capacitor (a bucket of charge) with one transistor as its door. Full = 1, empty = 0</td><td>No, and it leaks even with power</td><td>Cheap and dense, but must be refreshed about every 64 ms</td></tr>
+    <tr><td><b>SSD, firmware chip</b> (flash)</td><td>Electrons trapped inside an insulated layer of a special transistor</td><td>Yes, for years</td><td>Slower to write, wears out after many rewrites</td></tr>
+    <tr><td><b>Hard disk</b></td><td>The direction of tiny magnetic regions on a spinning platter</td><td>Yes</td><td>Huge and cheap, but mechanical and slow</td></tr>
+  </table></div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Leaky buckets: why RAM forgets</h4><span class="tag">bench 3.3</span></div>
+    <p class="hint">Eight DRAM cells storing one byte. Click a cell to write 1 or 0. Charge leaks away constantly; a reader sees 1 only above the halfway line. Turn off refresh and watch the byte decay. Time is slowed down: one second here is about 64 ms in a real chip.</p>
+    <canvas id="dram" style="height:200px" aria-label="DRAM cells leaking charge"></canvas>
+    <div class="row">
+      <button class="btn sel" id="dr-ref" aria-pressed="true">Refresh: ON</button>
+      <button class="btn" id="dr-off">Power off</button>
+      <button class="btn" id="dr-write">Write 10110010</button>
+      <span class="mono" id="dr-read" style="font-size:.9rem"></span>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>This answers the puzzle from the boot explanation: at power-on <b>RAM is empty</b> because its buckets leaked away, while the <b>firmware survives</b> because its electrons are physically trapped in the flash chip. So the CPU must start from the flash chip and load everything else into RAM.</p>
+    <h3>The memory hierarchy</h3>
+    <p>Fast memory is small and expensive; big memory is slow. So computers stack them: the CPU keeps what it needs right now in registers, recently used data in <b>cache</b>, the running programs in RAM, and everything else on the SSD. The gap in speed is enormous, and it's hard to feel in nanoseconds, so the bench can stretch time to human scale.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>How long does the CPU wait?</h4><span class="tag">bench 3.4</span></div>
+    <p class="hint">Typical time to fetch one piece of data. Bars use a log scale: each step to the right is 10× slower.</p>
+    <div class="row"><button class="btn sel" id="hz-real" aria-pressed="true">Real time</button><button class="btn" id="hz-human" aria-pressed="false">If 1 ns were 1 second</button></div>
+    <div class="hier" id="hier"></div>
+  </div>
+
+  <div class="prose">
+    <h3>Addresses</h3>
+    <p>RAM has billions of cells. Each location has a number, its <b>address</b>, like house numbers on a street. To read, the CPU puts the address on a set of wires; a circuit of gates called a <b>decoder</b> opens only the cells at that address, and their bits travel back on other wires. "Load from address 200" is physically exactly that.</p>
+  </div>
+
+  <div class="mine">
+    <h4>On your machines</h4>
+    <ul>
+      <li>MSI laptop: 16 GB DRAM, 12 MB of L3 cache shared by the 6 cores, a 512 GB NVMe SSD.</li>
+      <li>The homelab HDD that failed on 2026-10-12 was magnetic storage; your new 1 TB SSD is flash.</li>
+      <li>Try on Linux, one at a time:<ul class="cmds">
+        <li><code>free -h</code>: your RAM. <b>buff/cache</b> is RAM that Linux borrows to cache files from the disk and gives back the moment an app needs it, so <b>available</b> is the number that matters, not <b>free</b>.</li>
+        <li><code>lscpu | grep -i cache</code>: the CPU's cache sizes, L1 to L3.</li>
+        <li><code>lsblk</code>: your disks and their partitions, with sizes.</li>
+      </ul></li>
+    </ul>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 3"><div class="check-title">Self-check: Layer 3</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>How can a circuit made of gates remember?<details class="ans"><summary>Show answer</summary><span>Its output feeds back into its input, so it holds itself in a stable state. Set/Reset inputs change that state.</span></details></li>
+    <li>On bench 3.2, why didn't Q change the instant you flipped D?<details class="ans"><summary>Show answer</summary><span>A flip-flop only copies D on a rising clock edge, so every cell in the chip saves at the same moment.</span></details></li>
+    <li>Why is DRAM used for RAM if SRAM is faster?<details class="ans"><summary>Show answer</summary><span>DRAM needs 1 transistor + 1 capacitor per bit instead of ~6 transistors, so it's far denser and cheaper. Caches hide most of the speed gap.</span></details></li>
+    <li>In human time, how long does the CPU wait for the SSD?<details class="ans"><summary>Show answer</summary><span>About a day (1 ns → 1 s puts ~100 µs at ~28 hours). That's why the OS keeps file data cached in RAM.</span></details></li>
+  </ol></div>
+</section>
+
+<!-- ============================ LAYER 4 ============================ -->
+<section class="layer" id="cpu">
+  <div class="layer-head"><span class="num">4</span><div><h2>The CPU</h2><div class="sub">stored program · fetch → decode → execute · jumps</div></div></div>
+  <div class="prose">
+    <p>We have something that calculates (the ALU) and something that remembers (registers and RAM). The last ingredient is <b>control</b>: a way for the machine to decide, by itself, what to do next. That's what turns parts into a computer.</p>
+    <p>The key idea, from the 1940s, is the <b>stored program</b> (often called the von Neumann architecture): put the <b>instructions in the same memory as the data</b>. A program is a list of numbers sitting in RAM. To run a different program, load different numbers. That's why the same laptop can be a game console one minute and a CAD workstation the next.</p>
+    <h3>What an instruction is</h3>
+    <p>Each instruction is a bit pattern meaning one tiny action: copy a number from memory into a register, add two registers, store a register to memory, jump somewhere else. The first part, the <b>opcode</b>, says which action; the rest says which registers or addresses to use. The full list a CPU understands is its <b>instruction set</b>. Your Intel CPU speaks <b>x86-64</b>; phones and recent Macs speak <b>ARM</b>. The same bits mean different things to each, which is why programs are built for one or the other.</p>
+    <h3>Two special parts</h3>
+    <ul>
+      <li>The <b>Program Counter (PC)</b> is a register holding the address of the next instruction. It's the CPU's bookmark.</li>
+      <li>The <b>Control Unit</b> is a block of gates that reads the opcode and flips the right internal switches: which registers connect to the ALU, whether the ALU adds or subtracts, where the result goes.</li>
+    </ul>
+    <p>Then the CPU repeats one cycle, forever, as long as there's power: <b>fetch</b> the instruction at the PC's address, <b>decode</b> it, <b>execute</b> it, and <b>advance</b> the PC to the next one. Step through it below.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>CPU simulator</h4><span class="tag">bench 4.1</span></div>
+    <p class="hint">A made-up tiny CPU with 3 registers. Each click on <b>Step</b> does one phase of the cycle. The first program adds 5 + 3. The second uses <b>jumps</b> to loop, adding 3 + 2 + 1. Watch the PC jump backwards.</p>
+    <div class="row">
+      <button class="btn sel" data-prog="add">Program: 5 + 3</button>
+      <button class="btn" data-prog="loop">Program: loop 3 + 2 + 1</button>
+    </div>
+    <div class="cpu">
+      <div class="mem scroll"><table id="c-mem"></table></div>
+      <div class="core">
+        <div class="phases" id="c-ph"><div>Fetch</div><div>Decode</div><div>Execute</div><div>Advance</div></div>
+        <div><div class="mono" style="font-size:.68rem;color:var(--muted);letter-spacing:.08em">INSTRUCTION REGISTER (bits fetched from RAM)</div><div class="ir" id="c-ir"></div></div>
+        <div class="regs" id="c-regs"></div>
+        <div class="alu" id="c-alu"><small>ALU</small><span>idle</span></div>
+        <div class="explain" id="c-exp"></div>
+        <div class="row"><button class="btn pri" id="c-step">Step</button><button class="btn" id="c-run">Run</button><button class="btn" id="c-reset">Reset</button><span class="mono" id="c-count" style="font-size:.8rem;color:var(--muted)"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>Jumps make a computer more than a calculator</h3>
+    <p>If the PC only ever went up by one, a computer could only follow a straight list. The <b>jump</b> instruction overwrites the PC with a new address. An unconditional jump makes a <b>loop</b>. A conditional jump ("if this register is zero, jump to 107") makes a <b>decision</b>. With load, store, arithmetic and conditional jumps, a computer can compute anything that is computable at all. Alan Turing proved this in the 1930s, before real computers existed. Every app you've used, including a chatbot, reduces to these few kinds of steps repeated billions of times.</p>
+    <h3>How real CPUs go faster</h3>
+    <p>Our simulator does one phase at a time. Real CPUs overlap them like an assembly line: while one instruction executes, the next is being decoded and the one after that fetched. This is <b>pipelining</b>.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Pipelining</h4><span class="tag">bench 4.2</span></div>
+    <p class="hint">Five instructions, four stages each: Fetch, Decode, Execute, Write result.</p>
+    <div class="row"><button class="btn sel" id="p-no" aria-pressed="true">One at a time</button><button class="btn" id="p-yes" aria-pressed="false">Pipelined</button><span class="mono" id="p-msg" style="font-size:.85rem"></span></div>
+    <div class="scroll"><div class="pipe" id="pipe"></div></div>
+  </div>
+
+  <div class="scroll"><table>
+    <tr><th>Speed trick</th><th>What it does</th><th>On your i7-10750H</th></tr>
+    <tr><td>Pipelining</td><td>Overlaps the stages of many instructions</td><td>Deep pipeline, several instructions finished per tick</td></tr>
+    <tr><td>Multiple cores</td><td>Several complete fetch-decode-execute engines on one chip</td><td class="num">6 cores</td></tr>
+    <tr><td>Hyper-threading</td><td>One core keeps two instruction streams ready and fills idle moments</td><td class="num">12 threads</td></tr>
+    <tr><td>Branch prediction</td><td>Guesses which way a jump will go and starts early; wrong guesses are thrown away</td><td>Yes. Flaws in this led to the Spectre attacks (good Cybersecurity topic)</td></tr>
+    <tr><td>Cache</td><td>Keeps recently used RAM data close (Layer 3)</td><td class="num">12 MB L3</td></tr>
+  </table></div>
+
+  <div class="mine">
+    <h4>On your machines</h4>
+    <ul>
+      <li>A Windows game is x86-64 instructions plus calls to Windows. On CachyOS, the instructions run directly on your Intel CPU; <b>Proton</b> translates only the Windows calls into Linux ones.</li>
+      <li>Try on Linux, one at a time:<ul class="cmds">
+        <li><code>lscpu</code>: architecture, cores, threads, caches.</li>
+        <li><code>nproc</code>: how many threads the OS can run at once.</li>
+        <li><code>grep -m1 flags /proc/cpuinfo</code>: the CPU's feature list. Look for <code>vmx</code>: hardware virtualization, what Proxmox needs.</li>
+      </ul></li>
+      <li>See real instructions: on <a href="https://godbolt.org" target="_blank" rel="noopener">godbolt.org</a>, type <code>int add(int a,int b){return a+b;}</code> in C and it shows the x86-64 instructions it becomes.</li>
+    </ul>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 4"><div class="check-title">Self-check: Layer 4</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>Name the four phases of the cycle.<details class="ans"><summary>Show answer</summary><span>Fetch, decode, execute, advance (PC + 1).</span></details></li>
+    <li>In the loop program, which instruction makes the PC go backwards?<details class="ans"><summary>Show answer</summary><span><code>JMP 103</code> at address 106. It overwrites the PC instead of adding 1.</span></details></li>
+    <li>Why does the loop stop?<details class="ans"><summary>Show answer</summary><span>Each pass subtracts 1 from R1. When R1 reaches 0, <code>JZ R1, 107</code> jumps past the loop to the STORE.</span></details></li>
+    <li>Why can't an ARM phone run your laptop's x86 programs directly?<details class="ans"><summary>Show answer</summary><span>Different instruction sets: the same bit patterns mean different things (or nothing) to an ARM CPU.</span></details></li>
+  </ol></div>
+</section>
+
+<!-- ============================ LAYER 5 ============================ -->
+<section class="layer" id="boot">
+  <div class="layer-head"><span class="num">5</span><div><h2>Firmware and boot</h2><div class="sub">power → UEFI → GRUB → kernel → systemd → you</div></div></div>
+  <div class="prose">
+    <p>Now we can explain booting physically. When power arrives, RAM is empty (its buckets leaked), and the CPU starts its fetch-decode-execute cycle immediately. It needs an instruction from somewhere. CPUs are built so that at power-on the PC points to one fixed address, and the motherboard wires that address to a <b>flash chip</b>. The program stored there is the <b>firmware</b>.</p>
+    <p>Firmware is software that lives permanently inside hardware, hence the name: firmer than software. On PCs it's called <b>UEFI</b> (older machines had a BIOS). It tests the hardware, sets it up, and then looks for a boot program on a disk. Every step after that follows the same pattern: <b>load the next, more capable program into RAM, then jump to it.</b> That chain is why it's called booting, from "pulling yourself up by your bootstraps".</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>The boot chain</h4><span class="tag">bench 5.1</span></div>
+    <p class="hint">Press the power button to play the whole chain, or click any stage. The diagram lights up the parts at work, and dots moving along a wire are code being copied from one part to another. The RAM bar underneath shows what's loaded at each moment.</p>
+    <div class="row"><button class="btn pri" id="boot-go">⏻ Press power</button></div>
+    <div class="boot-wrap"><svg id="boot-svg" viewBox="0 0 520 292" role="img" aria-label="Diagram of the laptop's parts during boot: power button, firmware chip, CPU, RAM, screen and SSD"></svg></div>
+    <div class="chain" id="chain"></div>
+    <div class="stage" id="stage"></div>
+    <div><div class="mono" style="font-size:.68rem;color:var(--muted);letter-spacing:.08em;margin-bottom:4px">WHAT'S IN RAM (16 GB)</div><div class="ram" id="ram"></div></div>
+  </div>
+
+  <div class="prose">
+    <h3>Where everything lives on the disk</h3>
+    <p>UEFI understands disk partitions. It looks for a small partition formatted as FAT32 called the <b>EFI System Partition (ESP)</b>, which holds boot programs as <code>.efi</code> files. Windows has its boot manager there. On your MSI, the CachyOS installer wouldn't use the 200 MB Windows ESP (it wants at least 512 MB), so CachyOS got its own 1 GB ESP, and GRUB's file <code>grubx64.efi</code> lives there. A disk can hold more than one ESP: the firmware's boot list points at each one. GRUB keeps the kernel itself on the Linux partition in <code>/boot</code>, so its ESP only needs a small file; systemd-boot, the alternative, keeps the kernels on the ESP.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Your SSD after the dual boot</h4><span class="tag">bench 5.2</span></div>
+    <p class="hint">Proportional to size, 512 GB total. The tiny partitions are hard to see; that's the point: the two partitions that start everything are about 0.2% of the disk. Sizes are approximate.</p>
+    <div class="disk" id="disk"></div>
+    <div class="scroll"><table id="disk-t"></table></div>
+  </div>
+
+  <div class="prose">
+    <h3>GRUB, the receptionist</h3>
+    <p>GRUB shows a menu: CachyOS, an older kernel, a snapshot, or Windows. If you don't choose, it boots the default after a few seconds. When you pick an entry, it loads two files into RAM: the <b>kernel</b> (<code>vmlinuz</code>) and the <b>initramfs</b>, a tiny temporary filesystem with the drivers the kernel needs to reach your real disk (NVMe, Btrfs, encryption). Then it jumps into the kernel and its job is over.</p>
+    <p>You can press <kbd>e</kbd> on an entry to see and temporarily edit the exact commands GRUB will run. That's how you add a kernel option or boot into recovery when something breaks. Try it on the mock-up below.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>GRUB menu (illustration of a CachyOS install)</h4><span class="tag">bench 5.3</span></div>
+    <p class="hint">Click an entry or use the arrow keys after clicking the screen. Press <b>e</b> (or the button) to see what's behind the default entry. UUIDs and versions are made up.</p>
+    <div class="term" id="grub" tabindex="0" aria-label="GRUB menu illustration"></div>
+    <div class="row"><button class="btn" id="grub-e">Press e (edit)</button><button class="btn" id="grub-esc">Esc (back)</button><button class="btn" id="grub-enter">Enter (boot)</button></div>
+    <div class="notes" id="grub-notes" hidden>
+      <div><code>insmod btrfs</code><span>GRUB loads its own driver so it can read your Btrfs partition. GRUB is a tiny OS of its own.</span></div>
+      <div><code>search --fs-uuid</code><span>Finds the partition by its unique ID, so it still works if disk order changes.</span></div>
+      <div><code>linux …vmlinuz…</code><span>Loads the kernel. Everything after it is the <b>kernel command line</b>: <code>root=</code> says where the real system is, <code>rw</code> mounts it writable, <code>quiet splash</code> hides boot messages. Linux shows it later in <code>/proc/cmdline</code>.</span></div>
+      <div><code>initrd …</code><span>Loads the initramfs: the drivers needed to reach the root disk.</span></div>
+      <div><code>boot</code> (Ctrl-x)<span>Jumps into the kernel. Edits here are temporary; permanent ones go in <code>/etc/default/grub</code>, then run <code>sudo grub-mkconfig -o /boot/grub/grub.cfg</code>.</span></div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>After GRUB: kernel, then systemd</h3>
+    <p>The kernel takes over the hardware: it sets up memory management, starts drivers, unpacks the initramfs, finds and mounts your real root filesystem, and then starts the first normal program, <b>systemd</b>, which always gets process ID 1. systemd reads its configuration and starts everything else in parallel: networking, sound, the login screen, background services. You log in, and the desktop starts your apps.</p>
+  </div>
+  <div class="scroll"><table>
+    <tr><th>Stage</th><th>Stored on</th><th>Main job</th><th>If it breaks</th></tr>
+    <tr><td>UEFI firmware</td><td>Flash chip on the motherboard</td><td>Test hardware, pick a boot entry</td><td>BIOS setup (F2/Del on MSI), firmware update</td></tr>
+    <tr><td>GRUB</td><td>ESP (<code>grubx64.efi</code>) + <code>/boot/grub</code></td><td>Menu, load kernel + initramfs</td><td>Boot from the CachyOS USB and reinstall GRUB</td></tr>
+    <tr><td>Kernel</td><td><code>/boot/vmlinuz-…</code></td><td>Take over hardware, mount root</td><td>Pick an older kernel or a snapshot in GRUB</td></tr>
+    <tr><td>initramfs</td><td><code>/boot/initramfs-…img</code></td><td>Drivers to reach the root disk</td><td>Rebuild it (<code>sudo mkinitcpio -P</code> on Arch/CachyOS)</td></tr>
+    <tr><td>systemd</td><td>Root filesystem</td><td>Start services and login</td><td><code>journalctl -b</code>, <code>systemctl --failed</code></td></tr>
+  </table></div>
+
+  <div class="mine">
+    <h4>On your machines</h4>
+    <ul>
+      <li>On Windows: run <code>msinfo32</code> and check "BIOS Mode" says UEFI.</li>
+      <li>On CachyOS (or the Proxmox host), one at a time:<ul class="cmds">
+        <li><code>ls /sys/firmware/efi</code>: if it exists, you booted with UEFI.</li>
+        <li><code>efibootmgr</code>: the firmware's boot list. On the MSI you'll see Windows Boot Manager and cachyos.</li>
+        <li><code>cat /proc/cmdline</code>: the options GRUB passed to the kernel.</li>
+        <li><code>ls -lh /boot</code>: the kernel and initramfs files.</li>
+        <li><code>systemd-analyze blame | head</code>: the slowest services at startup.</li>
+      </ul></li>
+      <li>At your next restart: when GRUB appears, press <kbd>e</kbd>, read the <code>linux</code> line, then press Esc to leave without changes.</li>
+    </ul>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 5"><div class="check-title">Self-check: Layer 5</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>Why must the first code come from the flash chip, not the SSD?<details class="ans"><summary>Show answer</summary><span>RAM is empty at power-on and the CPU starts at a fixed address wired to the flash chip. Reading an SSD needs code that doesn't exist yet.</span></details></li>
+    <li>Which two files does GRUB load, and why the second?<details class="ans"><summary>Show answer</summary><span>The kernel and the initramfs. The initramfs holds the drivers the kernel needs to reach the real root disk.</span></details></li>
+    <li>A CachyOS update breaks booting. What can you do from GRUB?<details class="ans"><summary>Show answer</summary><span>Boot an older kernel or a Btrfs snapshot, or press e to edit the kernel line for recovery.</span></details></li>
+    <li>What's the one physical action repeated at every arrow of the chain?<details class="ans"><summary>Show answer</summary><span>Copy the next program into RAM, then jump to its first instruction.</span></details></li>
+  </ol></div>
+</section>
+
+<!-- ============================ LAYER 6 ============================ -->
+<section class="layer" id="os">
+  <div class="layer-head"><span class="num">6</span><div><h2>The operating system</h2><div class="sub">privilege · system calls · interrupts · scheduling · virtual memory</div></div></div>
+  <div class="prose">
+    <p>The kernel is running. Now the hard problem: one CPU (well, 12 threads), one RAM, one SSD, and dozens of programs that all want them at the same time. Without rules, every program would need its own driver for every device, and any bug would overwrite another program's memory. The operating system's kernel solves this by being the only program allowed to touch the hardware, and by sharing it fairly between everyone else.</p>
+    <h3>Privilege is enforced by the CPU itself</h3>
+    <p>The CPU has a mode switch built into its circuits. In <b>kernel mode</b> (called ring 0 on x86) every instruction is allowed. In <b>user mode</b> (ring 3), instructions that touch hardware or change memory mappings are forbidden: if a program tries one, the CPU stops it and hands control to the kernel. So even a buggy or malicious app physically can't write straight to your SSD. This is the "head chef" role, enforced in silicon.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Protection rings</h4><span class="tag">bench 6.1</span></div>
+    <p class="hint">Click a ring. Linux uses only two of the four rings x86 offers.</p>
+    <div class="row" style="align-items:center; gap:20px">
+      <svg id="rings" viewBox="0 0 260 260" style="width:240px" role="img" aria-label="CPU protection rings"></svg>
+      <div class="ringinfo prose" id="ringinfo" style="flex:1; min-width:220px"></div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>System calls: the only door into the kernel</h3>
+    <p>So how does a program read a file if it can't touch the disk? It asks. It puts a request number and its arguments into registers and runs a special instruction, <code>syscall</code>. The CPU switches to kernel mode and jumps to one fixed entry point the kernel set up at boot. The kernel checks the request, does the work, and returns to user mode. Programs can ask; they can never barge in.</p>
+    <h3>Interrupts: how hardware gets attention</h3>
+    <p>Instead of the CPU asking the keyboard "pressed yet?" millions of times, the keyboard sends an <b>interrupt</b>: an electrical signal that makes the CPU pause, save where it was, and run a kernel handler. Disks, network cards and a <b>timer</b> do the same. Follow a whole file read through the layers:</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>What happens when you run <span class="mono">cat notes.txt</span></h4><span class="tag">bench 6.2</span></div>
+    <p class="hint">Step through, or click any step. The bands show where the CPU is working at that moment.</p>
+    <div class="lanes" id="lanes"><div class="lane" data-l="user">User mode · the cat program</div><div class="lane" data-l="kernel">Kernel mode · Linux</div><div class="lane" data-l="hw">Hardware · CPU, SSD, interrupt lines</div></div>
+    <div class="row"><button class="btn pri" id="sc-next">Next step</button><button class="btn" id="sc-reset">Start over</button></div>
+    <ol class="steps" id="steps"></ol>
+  </div>
+
+  <div class="prose">
+    <h3>Multitasking: switching faster than you can notice</h3>
+    <p>Your laptop runs hundreds of processes on 12 hardware threads. The trick is the timer interrupt: many times per second it gives control back to the kernel, whose <b>scheduler</b> decides who runs next. Switching means saving one process's registers and PC and loading another's, a <b>context switch</b>. It happens thousands of times per second, so everything appears to run at once.</p>
+    <p>Most processes aren't even asking for the CPU most of the time. A process is <b>running</b> (on a core now), <b>ready</b> (wants a core, waiting its turn) or <b>waiting</b> (blocked on something: a key, a disk read, a network packet). When the thing it waits for arrives, an interrupt marks it ready again. Linux's scheduler since kernel 6.6 is called <b>EEVDF</b>; CachyOS ships tuned variants that favor responsiveness for desktop and gaming.</p>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Scheduler on two cores</h4><span class="tag">bench 6.3</span></div>
+    <p class="hint">Each column is one time slice. Watch processes take turns, block on I/O and come back. The terminal waits for you: press a key and the keyboard interrupt makes it ready.</p>
+    <canvas id="sched" style="height:150px" aria-label="Scheduler timeline"></canvas>
+    <div class="plist" id="plist"></div>
+    <div class="row">
+      <button class="btn pri" id="s-key">⌨ Press a key (interrupt)</button>
+      <button class="btn" id="s-play">Pause</button>
+      <span class="mono" id="s-stats" style="font-size:.82rem"></span>
+    </div>
+  </div>
+
+  <div class="prose">
+    <h3>Virtual memory: every process thinks it's alone</h3>
+    <p>Each process sees its own private address space, starting near 0. These are <b>virtual addresses</b>. A piece of CPU hardware called the <b>MMU</b> translates them, in chunks called <b>pages</b> (usually 4 KB), into real RAM locations the kernel chose. Two programs can both use "address 0x2000" and never collide, because each one's 0x2000 maps to a different physical place.</p>
+    <ul>
+      <li>One process can't see or break another's memory, so one crashing app doesn't take down the rest.</li>
+      <li>Shared code, like the C library, can be mapped into many processes but stored in RAM only once.</li>
+      <li>Rarely used pages can be moved to <b>swap</b> on disk; touching one causes a <b>page fault</b>, and the kernel quietly brings it back.</li>
+      <li>Touching an address that isn't mapped at all is a <b>segmentation fault</b>: the kernel stops the process.</li>
+    </ul>
+  </div>
+
+  <div class="bench">
+    <div class="bench-head"><h4>Page tables</h4><span class="tag">bench 6.4</span></div>
+    <p class="hint">Two processes (left and right) and the real RAM in the middle. Click any page to follow its mapping. Try process B's heap (in swap) and the unmapped pages.</p>
+    <div class="scroll"><svg id="vm" viewBox="0 0 560 430" style="min-width:480px" role="img" aria-label="Virtual memory mapping"></svg></div>
+    <div class="vmmsg" id="vmmsg">Click a page.</div>
+    <div class="row"><button class="btn" id="vm-reset">Reset</button></div>
+  </div>
+
+  <div class="prose">
+    <h3>"Everything is a file"</h3>
+    <p>Linux shows devices and kernel information as files. Your SSD is <code>/dev/nvme0n1</code>. Every process has a folder in <code>/proc</code> (systemd's is <code>/proc/1/</code>). Hardware details live in <code>/sys</code>. That's why so many Linux tools are just ways of reading files, and why <code>cat /proc/cpuinfo</code> works.</p>
+  </div>
+
+  <div class="mine">
+    <h4>On your machines</h4>
+    <ul>
+      <li>First install two tools CachyOS doesn't include: <code>sudo pacman -S htop strace</code></li>
+      <li><code>htop</code>: every core, every process, memory and swap. Press F5 for a tree that starts at PID 1, and q to quit.</li>
+      <li><code>vmstat 1 5</code>: one line per second, five times. Skip the first line (it's an average since boot). <code>in</code> is interrupts per second, <code>cs</code> is context switches per second, <code>id</code> is how idle the CPU is (%).</li>
+      <li><code>strace -c ls</code>: every system call <code>ls</code> makes, counted.</li>
+      <li><code>head /proc/self/maps</code>: a real virtual memory map, of the <code>head</code> command itself (<code>/proc/self</code> always means "the process reading this"). Each line is one region: its address range, permissions (<code>r</code> read, <code>w</code> write, <code>x</code> execute), and the file it comes from. Run it twice: the addresses change every time (that's ASLR, a security feature).</li>
+      <li>Your Proxmox LXC containers are this same idea pushed further: processes on one shared kernel, each given its own isolated view.</li>
+    </ul>
+  </div>
+
+  <div class="check" role="region" aria-label="Self-check: Layer 6"><div class="check-title">Self-check: Layer 6</div><p class="hint">Answer each one yourself first, then open its answer.</p><ol>
+    <li>What stops a normal app from writing straight to the SSD?<details class="ans"><summary>Show answer</summary><span>The CPU runs it in user mode, where hardware instructions are forbidden. Only the kernel, in kernel mode, can touch devices.</span></details></li>
+    <li>Why does the kernel need a timer interrupt?<details class="ans"><summary>Show answer</summary><span>To take the CPU back from programs that would never give it up, so the scheduler can share it fairly.</span></details></li>
+    <li>On bench 6.3, why does the terminal use no CPU until you press a key?<details class="ans"><summary>Show answer</summary><span>It's waiting on keyboard input. Only the keyboard interrupt makes it ready again.</span></details></li>
+    <li>On bench 6.4, both processes use libc but it's in RAM once. How?<details class="ans"><summary>Show answer</summary><span>Both page tables map their libc pages to the same physical frame. Each process still sees it at its own virtual address.</span></details></li>
+    <li>Trace "press a key → letter appears".<details class="ans"><summary>Show answer</summary><span>Keyboard interrupt → CPU pauses, runs the kernel's keyboard driver → kernel passes the event to the desktop and the focused app → app updates its text and asks the graphics stack to draw → GPU driver → screen.</span></details></li>
+  </ol></div>
+</section>
+
+</main>
+</div>
+
+<footer class="end">
+  <span>From Volts to Linux · study bench for the CS notes in the Learning Linux vault folder (CS 00–06).</span>
+  <span>Next layers: processes and files · the shell · packages · networking</span>
+</footer>
+
+<script>
+(() => {
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS = "http://www.w3.org/2000/svg";
+const redraws = [];
+const onTheme = f => redraws.push(f);
+const redrawAll = () => redraws.forEach(f => { try { f(); } catch (e) { console.error(e); } });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
+new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+let rT; addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(redrawAll, 120); });
+
+function ctx2d(c) {
+  const r = c.getBoundingClientRect(); const d = devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+  if (c.width !== w * d || c.height !== h * d) { c.width = w * d; c.height = h * d; }
+  const x = c.getContext("2d"); x.setTransform(d, 0, 0, d, 0, 0); x.clearRect(0, 0, w, h);
+  return { x, w, h };
+}
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+$$("details.ans").forEach(d => d.addEventListener("toggle", () => { d.querySelector("summary").textContent = d.open ? "Hide answer" : "Show answer"; }));
+/* Animations run only while they're useful: they start when you reach them (or act on them), stop by
+   themselves after 30 s, when they scroll out of view or the tab is hidden, and each has a Start/Stop button. */
+const MOTION_MAX = 30000, motions = [];
+function motion(bench, { start, stop, btn, after, labels = ["▶ Start animation", "⏸ Stop animation"], auto = false }) {
+  let on = false, t = null, seen = false;
+  if (!btn) { btn = document.createElement("button"); btn.className = "btn"; after.after(btn); }
+  const sync = () => { btn.textContent = labels[on ? 1 : 0]; btn.setAttribute("aria-pressed", on ? "true" : "false"); };
+  const api = {
+    btn, get on() { return on; },
+    play() { clearTimeout(t); t = setTimeout(api.pause, MOTION_MAX); if (!on) { on = true; start(); } sync(); },
+    pause() { clearTimeout(t); if (on) { on = false; stop(); } sync(); },
+    kick() { if (!reduceMotion) api.play(); }, // automatic starts respect "reduce motion"; the button always works
+  };
+  btn.addEventListener("click", () => on ? api.pause() : api.play());
+  new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting && auto && !seen) { seen = true; api.kick(); }
+    if (!e.isIntersecting) api.pause();
+  })).observe(bench);
+  motions.push(api); sync(); return api;
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) motions.forEach(m => m.pause()); });
+function pressed(btn, on) { btn.classList.toggle("sel", on); btn.setAttribute("aria-pressed", on ? "true" : "false"); }
+
+/* ---------- nav highlight ---------- */
+const navLinks = $$("nav.rail a");
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); });
+}, { rootMargin: "-30% 0px -60% 0px" });
+$$("section.layer").forEach(s => io.observe(s));
+
+/* ================= 1.1 byte ================= */
+(() => {
+  const box = $("#byte"); let val = 65; const btns = [];
+  for (let i = 7; i >= 0; i--) {
+    const b = document.createElement("button"); b.className = "bit"; b.type = "button";
+    b.innerHTML = `<b>0</b><small>${1 << i}</small>`;
+    b.addEventListener("click", () => { val ^= (1 << i); render(); });
+    b.dataset.i = i; box.appendChild(b); btns.push(b);
+  }
+  $$("[data-byte]").forEach(b => b.addEventListener("click", () => { val = +b.dataset.byte; render(); }));
+  function render() {
+    btns.forEach(b => { const on = (val >> +b.dataset.i) & 1; b.classList.toggle("on", !!on); b.querySelector("b").textContent = on; b.setAttribute("aria-label", `bit worth ${1 << b.dataset.i}: ${on}`); });
+    $("#b-dec").textContent = val;
+    $("#b-hex").textContent = "0x" + val.toString(16).toUpperCase().padStart(2, "0");
+    $("#b-chr").textContent = val >= 33 && val <= 126 ? String.fromCharCode(val) : (val === 32 ? "space" : "(not printable)");
+    $("#b-sw").style.background = `rgb(${val},${val},${val})`;
+  }
+  render();
+})();
+
+/* ================= 1.2 voltage ================= */
+(() => {
+  const c = $("#volt"), sl = $("#noise"); const bits = [1,0,1,1,0,0,1,0];
+  const PER = 40; let samples = [];
+  function gauss() { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function gen() {
+    const n = +sl.value; samples = [];
+    let prev = bits[0] ? 3.1 : 0.2;
+    bits.forEach(b => { const tgt = b ? 3.1 : 0.2; for (let k = 0; k < PER; k++) { prev += (tgt - prev) * 0.35; samples.push(prev + gauss() * n * 0.55); } });
+  }
+  function draw() {
+    const { x, w, h } = ctx2d(c); const L = 44, R = 10, T = 10, B = 22;
+    const Y = v => T + (h - T - B) * (1 - v / 3.6); const X = i => L + (w - L - R) * i / (samples.length - 1);
+    x.fillStyle = cv("--soft"); x.fillRect(L, Y(2.0), w - L - R, Y(0.8) - Y(2.0));
+    x.font = "11px " + cv("--f-mono"); x.fillStyle = cv("--muted"); x.textAlign = "right";
+    [[0,"0 V"],[0.8,"0.8"],[2.0,"2.0"],[3.3,"3.3"]].forEach(([v, t]) => { x.fillText(t, L - 6, Y(v) + 4); });
+    x.strokeStyle = cv("--trace"); x.setLineDash([5, 4]); x.lineWidth = 1;
+    [0.8, 2.0].forEach(v => { x.beginPath(); x.moveTo(L, Y(v)); x.lineTo(w - R, Y(v)); x.stroke(); });
+    x.setLineDash([]);
+    x.textAlign = "left"; x.fillStyle = cv("--trace");
+    x.fillText("above 2.0 V reads as 1", L + 6, Y(2.0) - 5); x.fillText("below 0.8 V reads as 0", L + 6, Y(0.8) + 13);
+    x.fillStyle = cv("--muted"); x.fillText("forbidden zone", w - R - 100, (Y(2.0) + Y(0.8)) / 2 + 4);
+    x.strokeStyle = cv("--ink"); x.lineWidth = 1.6; x.beginPath();
+    samples.forEach((v, i) => { const vv = Math.max(-0.2, Math.min(3.6, v)); i ? x.lineTo(X(i), Y(vv)) : x.moveTo(X(i), Y(vv)); }); x.stroke();
+    const read = [];
+    bits.forEach((b, k) => { const i = k * PER + PER * 0.6 | 0; const v = samples[i]; const r = v >= 2.0 ? 1 : v <= 0.8 ? 0 : "?"; read.push(r);
+      x.fillStyle = r === b ? cv("--live") : cv("--bad"); x.beginPath(); x.arc(X(i), Y(Math.max(-0.2, Math.min(3.6, v))), 5, 0, 7); x.fill();
+      x.fillStyle = cv("--muted"); x.textAlign = "center"; x.fillText(b, X(i), h - 6); });
+    $("#sent").innerHTML = bits.map(b => `<span>${b}</span>`).join("");
+    $("#read").innerHTML = read.map((r, k) => `<span class="${r === bits[k] ? "" : "err"}">${r}</span>`).join("");
+  }
+  sl.addEventListener("input", () => { $("#noise-v").textContent = (+sl.value).toFixed(2) + " V"; gen(); draw(); });
+  $("#volt-again").addEventListener("click", () => { gen(); draw(); });
+  gen(); draw(); onTheme(draw);
+})();
+
+/* ================= 1.3 sampling ================= */
+(() => {
+  const c = $("#samp"), sr = $("#sr"), bd = $("#bd"); let smooth = false;
+  const f = t => 0.6 * Math.sin(2 * Math.PI * 3 * t) + 0.32 * Math.sin(2 * Math.PI * 7 * t + 1.0);
+  function recon(q, t) { // band-limited periodic interpolation from N samples (DFT)
+    const N = q.length; let y = 0;
+    const K = Math.floor((N - 1) / 2);
+    for (let k = 0; k <= Math.floor(N / 2); k++) {
+      let re = 0, im = 0; for (let n = 0; n < N; n++) { const a = -2 * Math.PI * k * n / N; re += q[n] * Math.cos(a); im += q[n] * Math.sin(a); }
+      const a = 2 * Math.PI * k * t; const term = re * Math.cos(a) - im * Math.sin(a);
+      if (k === 0) y += term; else if (k <= K) y += 2 * term; else y += term; // Nyquist bin (even N)
+    }
+    return y / N;
+  }
+  function draw() {
+    const N = +sr.value, bits = +bd.value, levels = 2 ** bits;
+    $("#sr-v").textContent = N; $("#bd-v").textContent = `${bits} bit${bits > 1 ? "s" : ""} = ${levels} levels`;
+    const { x, w, h } = ctx2d(c); const L = 12, R = 12, T = 12, B = 12;
+    const X = t => L + (w - L - R) * t; const Y = v => T + (h - T - B) * (1 - (v + 1) / 2);
+    // level grid
+    x.strokeStyle = cv("--line"); x.lineWidth = 1;
+    if (levels <= 64) for (let i = 0; i < levels; i++) { const v = -1 + 2 * (i + 0.5) / levels; x.beginPath(); x.moveTo(L, Y(v)); x.lineTo(w - R, Y(v)); x.stroke(); }
+    // true signal
+    x.strokeStyle = cv("--muted"); x.lineWidth = 1.5; x.beginPath();
+    for (let i = 0; i <= 400; i++) { const t = i / 400; i ? x.lineTo(X(t), Y(f(t))) : x.moveTo(X(t), Y(f(t))); } x.stroke();
+    const q = [], ts = [];
+    for (let n = 0; n < N; n++) { const t = n / N; ts.push(t); const v = f(t); const idx = Math.min(levels - 1, Math.max(0, Math.floor((v + 1) / 2 * levels))); q.push(-1 + 2 * (idx + 0.5) / levels); }
+    if (!smooth) {
+      x.strokeStyle = cv("--live"); x.lineWidth = 2.5; x.beginPath();
+      for (let n = 0; n < N; n++) { const x0 = X(ts[n]), x1 = X((n + 1) / N); n ? x.lineTo(x0, Y(q[n])) : x.moveTo(x0, Y(q[n])); x.lineTo(x1, Y(q[n])); } x.stroke();
+    } else {
+      x.strokeStyle = cv("--trace"); x.lineWidth = 2.5; x.beginPath();
+      for (let i = 0; i <= 400; i++) { const t = i / 400; const v = recon(q, t); i ? x.lineTo(X(t), Y(Math.max(-1.2, Math.min(1.2, v)))) : x.moveTo(X(t), Y(v)); } x.stroke();
+    }
+    x.fillStyle = cv("--accent");
+    for (let n = 0; n < N; n++) { x.beginPath(); x.arc(X(ts[n]), Y(q[n]), 3.5, 0, 7); x.fill(); }
+    const m = $("#samp-msg");
+    if (N <= 14) { m.textContent = `⚠ ${N} samples ≤ 2 × 7: aliasing, the fast tone can't be captured`; m.style.color = cv("--bad"); }
+    else { m.textContent = `✓ ${N} samples > 2 × 7: enough to rebuild the wave (only rounding error left)`; m.style.color = cv("--good"); }
+  }
+  sr.addEventListener("input", draw); bd.addEventListener("input", draw);
+  $("#show-stair").addEventListener("click", () => { smooth = false; pressed($("#show-stair"), true); pressed($("#show-smooth"), false); draw(); });
+  $("#show-smooth").addEventListener("click", () => { smooth = true; pressed($("#show-smooth"), true); pressed($("#show-stair"), false); draw(); });
+  draw(); onTheme(draw);
+})();
+
+/* ================= 2.1 transistor ================= */
+(() => {
+  const s = $("#tr"); let on = false, inside = false;
+  function draw() {
+    s.innerHTML = "";
+    const live = cv("--live"), off = cv("--off"), ink = cv("--ink"), muted = cv("--muted"), trace = cv("--trace"), panel = cv("--panel"), soft = cv("--soft");
+    const t = (x, y, txt, o = {}) => { const e = el("text", { x, y, "text-anchor": o.a || "middle", "font-size": o.sz || 13, fill: o.f || ink, "font-family": "sans-serif", "font-weight": o.w || 600 }, s); e.textContent = txt; return e; };
+    s.setAttribute("aria-label", inside
+      ? "Cross-section of an NMOS transistor: two n-type regions in p-type silicon, with an insulated metal gate between them"
+      : "A transistor drawn as a switch between source and drain, closed by the gate");
+    if (!inside) { drawSimple(); return; }
+    const dot = (x, y) => el("circle", { cx: x, cy: y, r: 3, fill: ink }, s);              // free electron
+    const hole = (x, y) => el("circle", { cx: x, cy: y, r: 3, fill: "none", stroke: muted, "stroke-width": 1.4 }, s); // hole
+    // p-type substrate, then the two n-type wells (source, drain)
+    el("rect", { x: 90, y: 120, width: 340, height: 100, fill: soft, stroke: muted }, s);
+    [110, 330].forEach(x => el("path", { d: `M${x},120 V152 Q${x},164 ${x + 12},164 H${x + 78} Q${x + 90},164 ${x + 90},152 V120 Z`, fill: trace, "fill-opacity": 0.28, stroke: trace, "stroke-width": 1.5 }, s));
+    // channel: only exists while the gate is on
+    el("rect", { x: 200, y: 121, width: 130, height: 9, fill: on ? trace : "none", "fill-opacity": on ? 0.28 : 0, stroke: on ? trace : muted, "stroke-dasharray": on ? "0" : "4 4" }, s);
+    // oxide (insulator) and the metal gate on top
+    el("rect", { x: 196, y: 110, width: 138, height: 10, fill: muted }, s);
+    el("rect", { x: 205, y: 86, width: 120, height: 24, rx: 3, fill: on ? live : off, stroke: ink }, s);
+    // metal contacts on source and drain
+    el("rect", { x: 135, y: 112, width: 40, height: 8, fill: ink }, s); el("rect", { x: 355, y: 112, width: 40, height: 8, fill: ink }, s);
+    // carriers: electrons live in the n wells, holes in the p silicon; a gate voltage pulls electrons up and pushes holes down
+    [[125, 135], [145, 145], [165, 133], [185, 147], [140, 156], [175, 156]].forEach(([x, y]) => { dot(x, y); dot(x + 220, y); });
+    (on ? [[215, 160], [245, 168], [275, 158], [305, 166], [228, 184], [262, 186], [296, 182], [108, 200], [414, 200], [195, 190], [330, 192]]
+        : [[215, 138], [245, 148], [275, 136], [305, 146], [228, 172], [262, 165], [296, 176], [108, 200], [414, 200], [195, 188], [330, 190]]).forEach(([x, y]) => hole(x, y));
+    if (on) [212, 226, 240, 254, 268, 282, 296, 310, 322].forEach(x => dot(x, 126));
+    // wires
+    el("path", { d: "M30,116 H135", class: "wire", stroke: on ? live : off }, s);
+    el("path", { d: "M395,116 H490", class: "wire", stroke: on ? live : off }, s);
+    el("path", { d: "M265,86 V30", class: "wire", stroke: on ? live : off }, s);
+    // labels
+    t(30, 104, "source", { a: "start" }); t(490, 104, "drain", { a: "end" }); t(275, 24, "gate: the control voltage", { a: "start" });
+    t(265, 102, on ? "metal gate (+)" : "metal gate", { sz: 11, f: on ? panel : ink });
+    el("path", { d: "M352,84 L333,113", stroke: muted, "stroke-width": 1 }, s); t(346, 78, "oxide: an insulator", { a: "start", sz: 11, f: muted, w: 400 });
+    t(155, 182, "n-type", { sz: 12, f: trace }); t(375, 182, "n-type", { sz: 12, f: trace });
+    t(260, 212, "p-type silicon", { sz: 12, f: muted });
+    if (on) t(265, 146, "n-type channel", { sz: 11, f: trace });
+    // legend
+    dot(96, 240); t(106, 244, "free electron (−)", { a: "start", sz: 11, f: muted, w: 400 });
+    hole(236, 240); t(246, 244, "hole: a missing electron, acts as (+)", { a: "start", sz: 11, f: muted, w: 400 });
+    if (on) {
+      ["M30,116 H135", "M395,116 H490"].forEach(d => { // current on the wires; the channel's own electrons show the path through the silicon
+        const dots = el("path", { d, fill: "none", stroke: panel, "stroke-width": 3, "stroke-dasharray": "2 14", "stroke-linecap": "round" }, s);
+        el("animate", { attributeName: "stroke-dashoffset", from: "32", to: "0", dur: "0.6s", repeatCount: "indefinite" }, dots); });
+    }
+    const g = el("rect", { x: 205, y: 60, width: 120, height: 50, fill: "transparent", style: "cursor:pointer" }, s);
+    g.addEventListener("click", toggle);
+    why(on
+      ? "<b>Gate on.</b> The positive gate voltage pulls free electrons up to the surface, right under the oxide, and pushes the holes away. Those electrons form a thin <b>n-type channel</b> that joins the two n regions, so electrons can flow from source to drain and the switch is on (output 1). The oxide stops any current going into the gate itself, which is why holding a transistor on costs almost no power."
+      : "<b>Gate off.</b> Between the source and the drain sits <b>p-type</b> silicon, which has almost no free electrons. The electrons waiting in the n-type source can't cross it, so no current flows (output 0). The dashed line marks where a channel would form.");
+
+    // the same transistor, drawn only as what it does
+    function drawSimple() {
+      const c = on ? live : off, tip = on ? [320, 150] : [309, 99]; // the blade swings down onto the drain contact
+      el("path", { d: "M30,150 H200", class: "wire", stroke: c }, s);
+      el("path", { d: "M320,150 H490", class: "wire", stroke: c }, s);
+      el("path", { d: `M200,150 L${tip[0]},${tip[1]}`, class: "wire", stroke: c }, s);
+      [200, 320].forEach(x => el("circle", { cx: x, cy: 150, r: 5, fill: panel, stroke: ink, "stroke-width": 2 }, s));
+      // the gate pushes the blade, like a finger on a light switch
+      el("path", { d: "M260,30 V70", class: "wire", stroke: c }, s);
+      el("rect", { x: 236, y: 70, width: 48, height: 14, rx: 3, fill: c, stroke: ink }, s);
+      const py = on ? 146 : 120;
+      el("path", { d: `M260,84 V${py}`, stroke: muted, "stroke-width": 2, "stroke-dasharray": "4 4" }, s);
+      el("path", { d: `M250,${py} H270`, stroke: muted, "stroke-width": 3, "stroke-linecap": "round" }, s);
+      t(30, 138, "source", { a: "start" }); t(490, 138, "drain", { a: "end" }); t(275, 24, "gate: the control voltage", { a: "start" });
+      t(260, 196, on ? "closed: current can flow" : "open: nothing gets through", { f: on ? cv("--accent") : muted });
+      if (on) {
+        const dots = el("path", { d: "M30,150 H490", fill: "none", stroke: panel, "stroke-width": 3, "stroke-dasharray": "2 14", "stroke-linecap": "round" }, s);
+        el("animate", { attributeName: "stroke-dashoffset", from: "32", to: "0", dur: "0.6s", repeatCount: "indefinite" }, dots);
+      }
+      const g = el("rect", { x: 196, y: 20, width: 130, height: 150, fill: "transparent", style: "cursor:pointer" }, s);
+      g.addEventListener("click", toggle);
+      why(on
+        ? "<b>Gate on.</b> Voltage on the gate closes the switch, so the source and the drain are connected and current can flow (output 1). This is how chip designers usually think about a transistor, and it's all you need for the logic gates below."
+        : "<b>Gate off.</b> With no voltage on the gate the switch stays open, so nothing gets from the source to the drain (output 0). In a real chip no part moves: pick <b>Inside the silicon</b> to see what changes instead.");
+    }
+  }
+  function why(html) { $("#tr-why").innerHTML = html; }
+  function view(i) { inside = i; pressed($("#tr-inside"), i); pressed($("#tr-simple"), !i); draw(); }
+  $("#tr-simple").addEventListener("click", () => view(false));
+  $("#tr-inside").addEventListener("click", () => view(true));
+  function toggle() { on = !on; $("#tr-btn").textContent = on ? "Gate: ON (voltage applied), tap to switch off" : "Gate: OFF (0 V), tap to switch on";
+    $("#tr-msg").textContent = on ? "Output = 1. This signal could now drive another transistor's gate." : ""; draw();
+    mo.btn.disabled = !on; on ? mo.kick() : mo.pause(); }
+  $("#tr-btn").addEventListener("click", toggle);
+  const mo = motion(s.closest(".bench"), { after: $("#tr-btn"), start: () => s.unpauseAnimations(), stop: () => s.pauseAnimations() });
+  s.pauseAnimations(); mo.btn.disabled = true;
+  draw(); onTheme(draw);
+})();
+
+/* ================= gate shapes ================= */
+const GATES = {
+  AND:  { f: (a, b) => a & b, two: true,  out: 135, body: "M60,20 H95 A40,40 0 0 1 95,100 H60 Z", inEnd: 60 },
+  OR:   { f: (a, b) => a | b, two: true,  out: 135, body: "M55,20 Q78,60 55,100 Q112,100 135,60 Q112,20 55,20 Z", inEnd: 66 },
+  XOR:  { f: (a, b) => a ^ b, two: true,  out: 135, body: "M55,20 Q78,60 55,100 Q112,100 135,60 Q112,20 55,20 Z", extra: "M44,20 Q67,60 44,100", inEnd: 56 },
+  NAND: { f: (a, b) => 1 - (a & b), two: true, out: 147, body: "M60,20 H95 A40,40 0 0 1 95,100 H60 Z", bubble: 141, inEnd: 60 },
+  NOR:  { f: (a, b) => 1 - (a | b), two: true, out: 147, body: "M55,20 Q78,60 55,100 Q112,100 135,60 Q112,20 55,20 Z", bubble: 141, inEnd: 66 },
+  NOT:  { f: a => 1 - a, two: false, out: 143, body: "M60,25 L60,95 L125,60 Z", bubble: 131, inEnd: 60 },
+};
+function drawGate(g, type, ins, out, opts = {}) {
+  const G = GATES[type]; const live = cv("--live"), off = cv("--off");
+  const col = v => v ? live : off; const len = opts.wireLen ?? 210;
+  if (G.two) {
+    el("path", { d: `M0,40 H${G.inEnd}`, class: "wire", stroke: col(ins[0]) }, g);
+    el("path", { d: `M0,80 H${G.inEnd}`, class: "wire", stroke: col(ins[1]) }, g);
+  } else el("path", { d: `M0,60 H${G.inEnd}`, class: "wire", stroke: col(ins[0]) }, g);
+  el("path", { d: `M${G.out},60 H${len}`, class: "wire", stroke: col(out) }, g);
+  el("path", { d: G.body, class: "gbody" }, g);
+  if (G.extra) el("path", { d: G.extra, fill: "none", stroke: cv("--ink"), "stroke-width": 2.5 }, g);
+  if (G.bubble) el("circle", { cx: G.bubble, cy: 60, r: 6, class: "gbody" }, g);
+  if (opts.label) { const t = el("text", { x: 92, y: 64, "text-anchor": "middle", "font-size": 13, "font-family": "monospace", fill: cv("--ink"), "font-weight": 600 }, g); t.textContent = type; }
+}
+
+/* ================= 2.2 gate playground ================= */
+(() => {
+  let type = "AND", A = 0, B = 0;
+  const pick = $("#g-pick");
+  ["AND", "OR", "NOT", "XOR", "NAND"].forEach(t => { const b = document.createElement("button"); b.className = "btn" + (t === type ? " sel" : ""); b.textContent = t; b.addEventListener("click", () => { type = t; $$("button", pick).forEach(x => x.classList.toggle("sel", x === b)); render(); }); pick.appendChild(b); });
+  $("#g-a").addEventListener("click", () => { A ^= 1; render(); });
+  $("#g-b").addEventListener("click", () => { B ^= 1; render(); });
+  const desc = {
+    AND: "Two transistors in series. Current reaches the lamp only if both switches are closed.",
+    OR: "Two transistors in parallel. Either path is enough to light the lamp.",
+    NOT: "One input, flipped, with 2 transistors. Each switch is labelled with the input that closes it. The top one closes on A = 0 and connects the lamp to +. The bottom one closes on A = 1 and ties the output to ground (the ⏚ symbol, 0 V) instead. That top kind is the mirror-image transistor from the CMOS note above. A night light: dark (0) turns the lamp on (1).",
+    XOR: "1 when the inputs differ. Drawn here as the hallway light: two two-way switches joined by two wires. B's 0 and 1 are swapped, so both blades land on the same wire, and the lamp lights, only when A and B differ. In a chip it's built from several gates (for example 4 NANDs).",
+    NAND: "AND followed by NOT, in just 4 transistors. Top: two switches side by side, each closed by a 0, so either input at 0 lights the lamp. Bottom: two in a row, closed by 1s, so only A = 1 and B = 1 together pull the output down to 0. The universal gate: every other gate, and a whole CPU, can be built from NANDs only.",
+  };
+  function render() {
+    const G = GATES[type]; const out = G.f(A, B);
+    $("#g-a").textContent = `A = ${A}`; $("#g-b").textContent = `B = ${B}`; $("#g-b").disabled = !G.two; $("#g-b").style.opacity = G.two ? 1 : .4;
+    $("#g-a").classList.toggle("sel", !!A); $("#g-b").classList.toggle("sel", !!B && G.two);
+    const s = $("#g-svg"); s.innerHTML = ""; drawGate(el("g", {}, s), type, [A, B], out, { wireLen: 220 });
+    const L = $("#g-out"); L.textContent = out; L.classList.toggle("on", !!out);
+    const tt = $("#g-tt"); let h = G.two ? "<tr><th>A</th><th>B</th><th>Out</th></tr>" : "<tr><th>A</th><th>Out</th></tr>";
+    const rows = G.two ? [[0,0],[0,1],[1,0],[1,1]] : [[0],[1]];
+    rows.forEach(r => { const cur = G.two ? (r[0] === A && r[1] === B) : r[0] === A; h += `<tr class="${cur ? "cur" : ""}">${r.map(v => `<td>${v}</td>`).join("")}<td>${G.f(r[0], r[1] ?? 0)}</td></tr>`; });
+    tt.innerHTML = h; $("#g-desc").textContent = desc[type];
+    drawSwitches(out);
+  }
+  function drawSwitches(out) {
+    const s = $("#g-sw"); s.innerHTML = ""; const live = cv("--live"), off = cv("--off"), ink = cv("--ink"), muted = cv("--muted");
+    const lamp = (cx, cy) => { el("circle", { cx, cy, r: 14, fill: out ? live : cv("--bg"), stroke: ink, "stroke-width": 2 }, s); };
+    const sw = (x1, y, closed, label, lit) => {
+      el("circle", { cx: x1, cy: y, r: 3, fill: ink }, s); el("circle", { cx: x1 + 40, cy: y, r: 3, fill: ink }, s);
+      el("path", { d: closed ? `M${x1},${y} L${x1 + 40},${y}` : `M${x1},${y} L${x1 + 34},${y - 18}`, stroke: lit ? live : ink, "stroke-width": 3, "stroke-linecap": "round" }, s);
+      const t = el("text", { x: x1 + 20, y: y + 20, "text-anchor": "middle", "font-size": 12, "font-family": "monospace", fill: muted }, s); t.textContent = label;
+    };
+    const w = (d, lit) => el("path", { d, class: "wire", "stroke-width": 3, stroke: lit ? live : off }, s);
+    if (type === "AND") {
+      w("M20,30 H70", out); w("M110,30 H150", out); w("M190,30 H246", out); w("M274,30 H285 V110 H20 V30", out);
+      sw(70, 30, A, "A", A && out); sw(150, 30, B, "B", out); lamp(260, 30);
+      el("rect", { x: 10, y: 60, width: 20, height: 30, fill: cv("--bg"), stroke: ink }, s);
+      const t = el("text", { x: 36, y: 80, "font-size": 11, "font-family": "monospace", fill: muted }, s); t.textContent = "battery";
+    } else if (type === "OR") {
+      w("M20,65 H50", out); w("M50,65 V30 H90", A); w("M50,65 V95 H90", B);
+      w("M130,30 H170 V65", A); w("M130,95 H170 V65", B); w("M170,65 H246", out); w("M274,65 H285 V120 H20 V65", out);
+      sw(90, 30, A, "A", A); sw(90, 95, B, "B", B); lamp(260, 65);
+    } else if (type === "XOR") {
+      // two two-way switches; each blade picks the upper or the lower wire
+      const term = (x, y) => el("circle", { cx: x, cy: y, r: 3, fill: ink }, s);
+      const blade = (x1, y1, x2, y2) => el("path", { d: `M${x1},${y1} L${x2},${y2}`, stroke: out ? live : ink, "stroke-width": 3, "stroke-linecap": "round" }, s);
+      w("M20,65 H60", out); w("M220,65 H246", out); w("M274,65 H285 V120 H20 V65", out);
+      w("M100,40 H180", out && !A); w("M100,90 H180", out && A);
+      [[60, 65], [100, 40], [100, 90], [180, 40], [180, 90], [220, 65]].forEach(([x, y]) => term(x, y));
+      blade(60, 65, 97, A ? 88 : 42); blade(220, 65, 183, B ? 42 : 88);
+      const lb = (x, y, txt, o = {}) => { const t = el("text", { x, y, "text-anchor": o.a || "middle", "font-size": o.sz || 11, "font-family": "monospace", fill: o.f || muted }, s); t.textContent = txt; };
+      lb(50, 69, "A", { a: "end", sz: 12, f: ink }); lb(226, 88, "B", { a: "start", sz: 12, f: ink });
+      lb(100, 30, "0"); lb(100, 108, "1"); lb(180, 30, "1"); lb(180, 108, "0");
+      lamp(260, 65);
+    } else {
+      // CMOS: a pull-up side to + (closes on 0) and a pull-down side to ground (closes on 1)
+      const gnd = (x, y) => [[8, 0], [5, 4], [2, 8]].forEach(([h, dy]) => el("path", { d: `M${x - h},${y + dy} H${x + h}`, stroke: muted, "stroke-width": 2 }, s));
+      const lb = (x, y, txt) => { const t = el("text", { x, y, "text-anchor": "middle", "font-size": 11, "font-family": "sans-serif", fill: muted }, s); t.textContent = txt; };
+      el("text", { x: 14, y: 60, "text-anchor": "middle", "font-size": 15, "font-family": "monospace", "font-weight": 700, fill: ink }, s).textContent = "+";
+      if (type === "NOT") {
+        w("M24,55 H70", out); sw(70, 55, !A, "A=0", out); w("M110,55 H150", out);
+        w("M150,55 H190", 0); sw(190, 55, A, "A=1", false); w("M230,55 H280 V62", 0); gnd(280, 62);
+        el("circle", { cx: 150, cy: 55, r: 4, fill: out ? live : ink }, s);
+        w("M150,55 V82", out); lamp(150, 96); w("M150,110 V114", out); gnd(150, 114);
+        lb(90, 22, "pulls up to 1"); lb(210, 22, "pulls down to 0");
+      } else { // NAND
+        w("M24,55 H40", out); w("M40,55 V40 H70", out && !A); w("M40,55 V80 H70", out && !B);
+        sw(70, 40, !A, "A=0", out && !A); sw(70, 80, !B, "B=0", out && !B);
+        w("M110,40 H130 V55", out && !A); w("M110,80 H130 V55", out && !B); w("M130,55 H150", out);
+        el("circle", { cx: 150, cy: 55, r: 4, fill: out ? live : ink }, s);
+        w("M150,55 H170", 0); sw(170, 55, A, "A=1", false); w("M210,55 H220", 0); sw(220, 55, B, "B=1", false); w("M260,55 H285 V62", 0); gnd(285, 62);
+        w("M150,55 V82", out); lamp(150, 96); w("M150,110 V114", out); gnd(150, 114);
+        lb(90, 10, "pulls up to 1"); lb(225, 24, "pulls down to 0");
+      }
+    }
+  }
+  render(); onTheme(render);
+})();
+
+/* ================= 2.3 half adder ================= */
+(() => {
+  let A = 0, B = 0;
+  function render() {
+    const s = $("#ha"); s.innerHTML = ""; const live = cv("--live"), off = cv("--off"), ink = cv("--ink"), muted = cv("--muted");
+    const S = A ^ B, C = A & B; const col = v => v ? live : off;
+    el("path", { d: "M50,50 H190", class: "wire", stroke: col(A) }, s);
+    el("path", { d: "M110,50 V150 H190", class: "wire", stroke: col(A) }, s);
+    el("path", { d: "M50,190 H190", class: "wire", stroke: col(B) }, s);
+    el("path", { d: "M140,190 V90 H190", class: "wire", stroke: col(B) }, s);
+    el("circle", { cx: 110, cy: 50, r: 5, fill: col(A) }, s); el("circle", { cx: 140, cy: 190, r: 5, fill: col(B) }, s);
+    const g1 = el("g", { transform: "translate(190,10)" }, s); drawGate(g1, "XOR", [A, B], S, { wireLen: 200, label: true });
+    const g2 = el("g", { transform: "translate(190,110)" }, s); drawGate(g2, "AND", [A, B], C, { wireLen: 200, label: true });
+    const lab = (x, y, t, a = "start", f = ink) => { const e = el("text", { x, y, "text-anchor": a, "font-size": 15, "font-family": "monospace", "font-weight": 600, fill: f }, s); e.textContent = t; };
+    lab(10, 55, "A=" + A); lab(10, 195, "B=" + B);
+    el("circle", { cx: 420, cy: 70, r: 16, fill: S ? live : cv("--bg"), stroke: ink, "stroke-width": 2 }, s);
+    el("circle", { cx: 420, cy: 170, r: 16, fill: C ? live : cv("--bg"), stroke: ink, "stroke-width": 2 }, s);
+    lab(442, 75, S, "start"); lab(442, 175, C, "start");
+    lab(420, 105, "Sum", "middle", muted); lab(420, 205, "Carry", "middle", muted);
+    $("#ha-a").textContent = "A = " + A; $("#ha-b").textContent = "B = " + B;
+    $("#ha-a").classList.toggle("sel", !!A); $("#ha-b").classList.toggle("sel", !!B);
+    $("#ha-eq").textContent = `${A} + ${B} = ${C}${S} in binary (= ${A + B})`;
+  }
+  $("#ha-a").addEventListener("click", () => { A ^= 1; render(); });
+  $("#ha-b").addEventListener("click", () => { B ^= 1; render(); });
+  render(); onTheme(render);
+})();
+
+/* ================= 2.4 4-bit adder ================= */
+(() => {
+  let a = [0,1,1,0], b = [0,0,1,1]; // MSB first: 6 + 3
+  const box = $("#adder");
+  function render() {
+    const carry = [0,0,0,0,0]; const sum = [0,0,0,0];
+    for (let i = 3; i >= 0; i--) { const t = a[i] + b[i] + carry[i + 1]; sum[i] = t & 1; carry[i] = t >> 1; }
+    const over = carry[0];
+    let h = `<div class="lab">carry</div><div class="c carry ${over ? "on" : ""}">${over}</div>`;
+    for (let i = 0; i < 4; i++) h += `<div class="c carry ${carry[i + 1] ? "on" : ""}">${i === 3 ? "" : carry[i + 1]}</div>`;
+    h += `<div class="lab">A</div><div class="c blank"></div>` + a.map((v, i) => `<button class="c ${v ? "on" : ""}" data-r="a" data-i="${i}" aria-label="A bit ${i}">${v}</button>`).join("");
+    h += `<div class="lab">+ B</div><div class="c blank"></div>` + b.map((v, i) => `<button class="c ${v ? "on" : ""}" data-r="b" data-i="${i}" aria-label="B bit ${i}">${v}</button>`).join("");
+    h += `<div></div><div class="rule"></div>`;
+    h += `<div class="lab">sum</div><div class="c sum ${over ? "on" : ""}" style="${over ? "" : "opacity:.35"}">${over}</div>` + sum.map(v => `<div class="c sum ${v ? "on" : ""}">${v}</div>`).join("");
+    box.innerHTML = h;
+    const A = parseInt(a.join(""), 2), B = parseInt(b.join(""), 2);
+    $("#add-eq").innerHTML = `${A} + ${B} = ${A + B}` + (over ? ` <span style="color:var(--bad)">overflow: needs a 5th bit; a 4-bit machine would show ${(A + B) & 15}</span>` : "");
+    $$("button.c", box).forEach(btn => btn.addEventListener("click", () => { const arr = btn.dataset.r === "a" ? a : b; arr[+btn.dataset.i] ^= 1; render(); }));
+  }
+  render();
+})();
+
+/* ================= 3.1 SR latch ================= */
+(() => {
+  let S = 0, R = 0, Q = 0, Qn = 1, powered = true;
+  function settle() { for (let k = 0; k < 6; k++) { const q = 1 - (R | Qn); const qn = 1 - (S | q); Q = q; Qn = qn; } }
+  function render() {
+    const s = $("#latch"); s.innerHTML = ""; const live = cv("--live"), off = cv("--off"), ink = cv("--ink"), muted = cv("--muted");
+    const col = v => (powered && v) ? live : off;
+    const g1 = el("g", { transform: "translate(170,10)" }, s); drawGate(g1, "NOR", [R, Qn], Q, { wireLen: 150, label: true });
+    const g2 = el("g", { transform: "translate(170,120)" }, s); drawGate(g2, "NOR", [Q, S], Qn, { wireLen: 150, label: true });
+    // overwrite the input wires properly: g1 in1=R (y=50) in2=Qn (y=90); g2 in1=Q (y=160) in2=S (y=200)
+    el("path", { d: "M30,50 H170", class: "wire", stroke: col(R) }, s);
+    el("path", { d: "M30,200 H170", class: "wire", stroke: col(S) }, s);
+    // feedback: Q (out at y=70, x=320) down to g2 in1 (y=160)
+    el("path", { d: "M320,70 H340 V114 L150,126 V160 H170", class: "wire", stroke: col(Q) }, s);
+    el("path", { d: "M320,180 H360 V126 L130,114 V90 H170", class: "wire", stroke: col(Qn) }, s);
+    el("path", { d: "M340,70 H470", class: "wire", stroke: col(Q) }, s);
+    el("path", { d: "M360,180 H470", class: "wire", stroke: col(Qn) }, s);
+    const t = (x, y, txt, a = "start", f = ink) => { const e = el("text", { x, y, "text-anchor": a, "font-size": 15, "font-family": "monospace", "font-weight": 600, fill: f }, s); e.textContent = txt; return e; };
+    t(10, 55, "R"); t(10, 205, "S");
+    t(476, 75, powered ? "Q = " + Q : "Q = ?", "start", powered && Q ? cv("--accent") : ink);
+    t(476, 185, powered ? "Q̄ = " + Qn : "Q̄ = ?", "start", muted);
+    t(260, 240, "the two crossing wires are the loop: each gate's output feeds the other", "middle", muted).setAttribute("font-size", 11);
+  }
+  function pulse(which) {
+    if (!powered) { powered = true; Q = Math.random() < .5 ? 1 : 0; Qn = 1 - Q; }
+    if (which === "S") S = 1; else R = 1; settle(); render();
+    $("#l-msg").textContent = which === "S" ? "Set is pressed…" : "Reset is pressed…";
+    setTimeout(() => { S = 0; R = 0; settle(); render(); $("#l-msg").textContent = `Released. Q stays ${Q}: the loop is holding it.`; }, 600);
+  }
+  $("#l-set").addEventListener("click", () => pulse("S"));
+  $("#l-reset").addEventListener("click", () => pulse("R"));
+  $("#l-power").addEventListener("click", () => { powered = false; render(); $("#l-msg").textContent = "Power cut. The loop stops and the bit is lost. When power returns the latch lands on a random value: this is why RAM is empty at boot."; });
+  settle(); render(); onTheme(render);
+})();
+
+/* ================= 3.2 flip-flop timing ================= */
+(() => {
+  const c = $("#ff"); let D = 0, Q = 0, t = 0, lastClk = 0, raf = 0; const hist = []; const MAX = 600;
+  function period() { return [0, 90, 60, 40, 26][+$("#ff-speed").value]; }
+  function tick() {
+    const P = period(); const clk = (t % P) < P / 2 ? 1 : 0;
+    let edge = false; if (clk && !lastClk) { Q = D; edge = true; } lastClk = clk;
+    hist.push({ clk, D, Q, edge }); if (hist.length > MAX) hist.shift(); t++;
+  }
+  function draw() {
+    const { x, w, h } = ctx2d(c); const L = 54; const rows = [["CLK", "clk"], ["D (you)", "D"], ["Q (stored)", "Q"]];
+    const rowH = (h - 10) / 3; const n = Math.min(hist.length, Math.floor((w - L - 6) / 1.5)); const start = hist.length - n;
+    x.font = "11px " + cv("--f-mono"); x.fillStyle = cv("--muted"); x.textAlign = "left";
+    rows.forEach((r, i) => x.fillText(r[0], 4, 10 + rowH * i + rowH / 2 + 4));
+    x.strokeStyle = cv("--line"); x.setLineDash([3, 4]); x.lineWidth = 1;
+    for (let k = 0; k < n; k++) if (hist[start + k].edge) { const X = L + k * 1.5; x.beginPath(); x.moveTo(X, 4); x.lineTo(X, h - 4); x.stroke(); }
+    x.setLineDash([]);
+    const colors = [cv("--trace"), cv("--ink"), cv("--live")];
+    rows.forEach((r, i) => { const y0 = 10 + rowH * i; const hi = y0 + rowH * 0.15, lo = y0 + rowH * 0.8;
+      x.strokeStyle = colors[i]; x.lineWidth = 2.2; x.beginPath();
+      for (let k = 0; k < n; k++) { const v = hist[start + k][r[1]]; const X = L + k * 1.5, Y = v ? hi : lo; k ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke(); });
+  }
+  function loop() { tick(); tick(); draw(); raf = requestAnimationFrame(loop); }
+  for (let i = 0; i < 300; i++) { if (i === 70) D = 1; if (i === 160) D = 0; if (i === 215) D = 1; tick(); }
+  $("#ff-d").textContent = `Flip D (now ${D})`;
+  $("#ff-d").addEventListener("click", () => { D ^= 1; $("#ff-d").textContent = `Flip D (now ${D})`; if (!mo.on) { for (let i = 0; i < 30; i++) tick(); draw(); } });
+  const mo = motion(c.closest(".bench"), { btn: $("#ff-play"), labels: ["▶ Play", "⏸ Pause"], auto: true,
+    start: () => { raf = requestAnimationFrame(loop); }, stop: () => cancelAnimationFrame(raf) });
+  draw(); onTheme(draw);
+})();
+
+/* ================= 3.3 DRAM ================= */
+(() => {
+  const c = $("#dram"); let stored = [1,0,1,1,0,0,1,0], charge = stored.map(v => v), refresh = true, last = performance.now(), sinceRef = 0, raf = 0;
+  function draw() {
+    const { x, w, h } = ctx2d(c); const n = 8, gap = 10, top = 22, bot = 30; const cw = (w - gap * (n + 1)) / n; const ch = h - top - bot;
+    x.font = "11px " + cv("--f-mono"); const read = [];
+    for (let i = 0; i < n; i++) {
+      const X = gap + i * (cw + gap);
+      x.strokeStyle = cv("--ink"); x.lineWidth = 2; x.strokeRect(X, top, cw, ch);
+      const lvl = Math.max(0, Math.min(1, charge[i]));
+      x.fillStyle = lvl > 0.5 ? cv("--live") : cv("--off"); x.fillRect(X + 2, top + ch * (1 - lvl) + 1, cw - 4, ch * lvl - 2 > 0 ? ch * lvl - 2 : 0);
+      const r = lvl > 0.5 ? 1 : 0; read.push(r);
+      x.fillStyle = r === stored[i] ? cv("--ink") : cv("--bad"); x.textAlign = "center"; x.font = "600 15px " + cv("--f-mono");
+      x.fillText(r, X + cw / 2, h - 8);
+      x.font = "11px " + cv("--f-mono"); x.fillStyle = cv("--muted"); x.fillText("wrote " + stored[i], X + cw / 2, 14);
+    }
+    x.strokeStyle = cv("--trace"); x.setLineDash([5, 4]); x.beginPath(); x.moveTo(4, top + ch / 2); x.lineTo(w - 4, top + ch / 2); x.stroke(); x.setLineDash([]);
+    const ok = read.every((r, i) => r === stored[i]);
+    const m = $("#dr-read"); m.textContent = `reads as ${read.join("")} ${ok ? "✓" : "✗ data lost"}`; m.style.color = ok ? cv("--good") : cv("--bad");
+  }
+  function step(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    charge = charge.map(q => q * Math.exp(-dt * 0.35));
+    if (refresh) { sinceRef += dt; if (sinceRef > 1.0) { sinceRef = 0; charge = charge.map((q, i) => q > 0.5 ? 1 : 0); } }
+    draw(); raf = requestAnimationFrame(step);
+  }
+  c.addEventListener("click", e => { const r = c.getBoundingClientRect(); const i = Math.floor((e.clientX - r.left) / r.width * 8); if (i >= 0 && i < 8) { stored[i] ^= 1; charge[i] = stored[i]; draw(); } });
+  $("#dr-ref").addEventListener("click", () => { refresh = !refresh; $("#dr-ref").textContent = "Refresh: " + (refresh ? "ON" : "OFF"); pressed($("#dr-ref"), refresh); });
+  $("#dr-off").addEventListener("click", () => { charge = charge.map(() => 0); draw(); });
+  $("#dr-write").addEventListener("click", () => { stored = [1,0,1,1,0,0,1,0]; charge = stored.slice(); draw(); });
+  draw(); onTheme(draw);
+  motion(c.closest(".bench"), { after: $("#dr-ref"), auto: true,
+    start: () => { last = performance.now(); raf = requestAnimationFrame(step); }, stop: () => cancelAnimationFrame(raf) });
+})();
+
+/* ================= 3.4 hierarchy ================= */
+(() => {
+  const rows = [
+    ["Register", "inside the core", 0.3], ["L1 cache", "per core", 1], ["L2 cache", "per core", 4], ["L3 cache", "shared, 12 MB", 12],
+    ["RAM", "16 GB DRAM", 100], ["NVMe SSD", "512 GB flash", 100000], ["Hard disk", "spinning", 10000000],
+  ];
+  let human = false;
+  function fmtReal(ns) { return ns < 1000 ? ns + " ns" : ns < 1e6 ? ns / 1000 + " µs" : ns / 1e6 + " ms"; }
+  function fmtHuman(ns) { const s = ns; if (s < 60) return s + " s"; if (s < 3600) return (s / 60).toFixed(1) + " min"; if (s < 86400 * 2) return (s / 3600).toFixed(0) + " hours"; if (s < 86400 * 365) return (s / 86400).toFixed(0) + " days"; return (s / 86400 / 365).toFixed(1) + " years"; }
+  function render() {
+    $("#hier").innerHTML = rows.map(([n, d, ns]) => { const wpc = (Math.log10(ns) + 1) / 8.2 * 100;
+      return `<div class="h"><div><div class="n">${n}</div><div style="font-size:.75rem;color:var(--muted)">${d}</div></div><div><div class="bar" style="width:${wpc.toFixed(1)}%"></div></div><div class="v">${human ? fmtHuman(ns) : fmtReal(ns)}</div></div>`; }).join("");
+  }
+  $("#hz-real").addEventListener("click", () => { human = false; pressed($("#hz-real"), true); pressed($("#hz-human"), false); render(); });
+  $("#hz-human").addEventListener("click", () => { human = true; pressed($("#hz-human"), true); pressed($("#hz-real"), false); render(); });
+  render();
+})();
+
+/* ================= 4.1 CPU ================= */
+(() => {
+  const PROGS = {
+    add: { code: [
+      [100, "LOAD", ["R1", 200], "R1 ← mem[200]"], [101, "LOAD", ["R2", 201], "R2 ← mem[201]"],
+      [102, "ADD", ["R3", "R1", "R2"], "R3 ← R1 + R2"], [103, "STORE", ["R3", 202], "mem[202] ← R3"], [104, "HALT", [], "stop"]],
+      data: { 200: 5, 201: 3, 202: 0 } },
+    loop: { code: [
+      [100, "LOADI", ["R1", 3], "R1 ← 3 (counter)"], [101, "LOADI", ["R2", 0], "R2 ← 0 (total)"], [102, "LOADI", ["R3", 1], "R3 ← 1"],
+      [103, "JZ", ["R1", 107], "if R1 = 0, jump to 107"], [104, "ADD", ["R2", "R2", "R1"], "R2 ← R2 + R1"],
+      [105, "SUB", ["R1", "R1", "R3"], "R1 ← R1 − R3"], [106, "JMP", [103], "jump to 103"],
+      [107, "STORE", ["R2", 200], "mem[200] ← R2"], [108, "HALT", [], "stop"]],
+      data: { 200: 0 } },
+  };
+  const OPC = { LOAD: "0001", STORE: "0010", ADD: "0011", SUB: "0100", LOADI: "0101", JZ: "0110", JMP: "0111", HALT: "1111" };
+  const RB = { R1: "01", R2: "10", R3: "11" };
+  let prog = "add", st, timer = null;
+  function reset() { const P = PROGS[prog]; st = { pc: 100, regs: { R1: 0, R2: 0, R3: 0 }, mem: { ...P.data }, phase: -1, ir: null, halted: false, jumped: false, alu: "idle", hot: [], touch: null, cycles: 0, exp: "Press <b>Step</b>. The PC holds 100, so the CPU will fetch the instruction at address 100." }; stopRun(); render(); }
+  function instAt(a) { return PROGS[prog].code.find(c => c[0] === a); }
+  function encode(i) { const [, op, args] = i; const f = [{ k: "opcode", v: OPC[op], op: true }];
+    args.forEach(a => { if (typeof a === "string") f.push({ k: a, v: RB[a] }); else f.push({ k: String(a), v: a.toString(2).padStart(8, "0") }); }); return f; }
+  function step() {
+    if (st.halted) return; st.hot = []; st.touch = null;
+    st.phase = (st.phase + 1) % 4;
+    const ins = st.ir;
+    if (st.phase === 0) { st.ir = instAt(st.pc); st.alu = "idle"; st.jumped = false; st.cycles++;
+      st.exp = `<b>Fetch.</b> Send address ${st.pc} (from the PC) to RAM. The bits stored there come back into the instruction register.`; }
+    else if (st.phase === 1) { st.exp = `<b>Decode.</b> The control unit reads opcode <span class="mono">${OPC[ins[1]]}</span> = <b>${ins[1]}</b>. Meaning: ${ins[3]}. It connects the right registers and tells the ALU what to do.`; }
+    else if (st.phase === 2) { const [, op, a] = ins; const R = st.regs;
+      if (op === "LOAD") { R[a[0]] = st.mem[a[1]]; st.hot = [a[0]]; st.touch = a[1]; st.exp = `<b>Execute.</b> Read RAM address ${a[1]} (value ${st.mem[a[1]]}) into ${a[0]}.`; }
+      else if (op === "LOADI") { R[a[0]] = a[1]; st.hot = [a[0]]; st.exp = `<b>Execute.</b> Put the number ${a[1]}, which is inside the instruction itself, into ${a[0]}.`; }
+      else if (op === "STORE") { st.mem[a[1]] = R[a[0]]; st.touch = a[1]; st.hot = [a[0]]; st.exp = `<b>Execute.</b> Copy ${a[0]} (${R[a[0]]}) into RAM address ${a[1]}.`; }
+      else if (op === "ADD") { const r = R[a[1]] + R[a[2]]; st.alu = `${R[a[1]]} + ${R[a[2]]} = ${r}`; R[a[0]] = r; st.hot = [a[0]]; st.exp = `<b>Execute.</b> ${a[1]} and ${a[2]} flow into the ALU's adder (Layer 2). The result is saved into ${a[0]} on the clock tick.`; }
+      else if (op === "SUB") { const r = R[a[1]] - R[a[2]]; st.alu = `${R[a[1]]} − ${R[a[2]]} = ${r}`; R[a[0]] = r; st.hot = [a[0]]; st.exp = `<b>Execute.</b> The ALU subtracts (by adding the negative). ${a[0]} becomes ${r}.`; }
+      else if (op === "JZ") { const z = R[a[0]] === 0; st.alu = `${a[0]} = ${R[a[0]]} → ${z ? "zero" : "not zero"}`; if (z) { st.pc = a[1]; st.jumped = true; }
+        st.exp = z ? `<b>Execute.</b> ${a[0]} is 0, so the jump is taken: the PC is overwritten with ${a[1]}. The loop is over.` : `<b>Execute.</b> ${a[0]} is ${R[a[0]]}, not 0, so no jump. Carry on to the next instruction.`; }
+      else if (op === "JMP") { st.pc = a[0]; st.jumped = true; st.exp = `<b>Execute.</b> Jump: the PC is overwritten with ${a[0]}. This is what makes a loop.`; }
+      else if (op === "HALT") { st.halted = true; st.exp = `<b>Halt.</b> Program finished. ${prog === "add" ? "RAM address 202 now holds 8." : "RAM address 200 now holds 6 (3 + 2 + 1)."} A real CPU never stops: the OS would give it something else to do.`; stopRun(); } }
+    else if (st.phase === 3) { if (st.jumped) st.exp = `<b>Advance.</b> Skipped: the jump already set the PC to ${st.pc}.`; else { st.pc++; st.exp = `<b>Advance.</b> PC + 1 = ${st.pc}. Back to fetch.`; } }
+    render();
+  }
+  function render() {
+    const P = PROGS[prog];
+    let h = "<tr><th>Addr</th><th>Contents</th><th>Meaning</th></tr>";
+    P.code.forEach(([a, op, args, m]) => { h += `<tr class="${a === st.pc && !st.halted ? "pc" : ""}"><td>${a}</td><td>${op} ${args.join(", ")}</td><td style="color:var(--muted)">${m}</td></tr>`; });
+    h += `<tr><td colspan="3" style="color:var(--muted);font-size:.7rem;letter-spacing:.08em">DATA</td></tr>`;
+    Object.keys(st.mem).forEach(a => { h += `<tr class="${+a === st.touch ? "touch" : ""}"><td>${a}</td><td>${st.mem[a]}</td><td style="color:var(--muted)">a number</td></tr>`; });
+    $("#c-mem").innerHTML = h;
+    $$("#c-ph div").forEach((d, i) => d.classList.toggle("on", i === st.phase && !st.halted || (st.halted && i === 2)));
+    $("#c-ir").innerHTML = st.ir ? encode(st.ir).map(f => `<span class="${f.op ? "op" : ""}">${f.v}<small>${f.k}</small></span>`).join("") : `<span>—<small>empty</small></span>`;
+    $("#c-regs").innerHTML = `<div class="${st.phase === 0 || st.phase === 3 ? "hot" : ""}"><small>PC</small><b>${st.pc}</b></div>` + ["R1", "R2", "R3"].map(r => `<div class="${st.hot.includes(r) ? "hot" : ""}"><small>${r}</small><b>${st.regs[r]}</b></div>`).join("");
+    $("#c-alu").innerHTML = `<small>ALU</small><span>${st.alu}</span>`;
+    $("#c-exp").innerHTML = st.exp;
+    $("#c-count").textContent = `instructions started: ${st.cycles}`;
+  }
+  function stopRun() { if (timer) { clearInterval(timer); timer = null; } $("#c-run").textContent = "Run"; }
+  $("#c-step").addEventListener("click", () => { stopRun(); step(); });
+  $("#c-run").addEventListener("click", () => { if (timer) return stopRun(); if (st.halted) reset(); $("#c-run").textContent = "Pause"; timer = setInterval(step, 700); });
+  $("#c-reset").addEventListener("click", reset);
+  $$("[data-prog]").forEach(b => b.addEventListener("click", () => { prog = b.dataset.prog; $$("[data-prog]").forEach(x => x.classList.toggle("sel", x === b)); reset(); }));
+  reset();
+})();
+
+/* ================= 4.2 pipeline ================= */
+(() => {
+  let piped = false;
+  function render() {
+    const N = 5, S = ["F", "D", "E", "W"]; const cycles = piped ? N + S.length - 1 : N * S.length;
+    const box = $("#pipe"); box.style.gridTemplateColumns = `70px repeat(${cycles}, minmax(22px, 1fr))`;
+    let h = `<div class="lbl"></div>`; for (let c = 1; c <= cycles; c++) h += `<div class="hd">${c}</div>`;
+    for (let i = 0; i < N; i++) { h += `<div class="lbl">instr ${i + 1}</div>`;
+      for (let c = 0; c < cycles; c++) { const s = piped ? c - i : c - i * S.length; h += (s >= 0 && s < S.length) ? `<div class="${S[s]}">${S[s]}</div>` : "<div></div>"; } }
+    box.innerHTML = h;
+    $("#p-msg").textContent = piped ? `${cycles} clock ticks. Once the line is full, one instruction finishes every tick.` : `${cycles} clock ticks. Each instruction waits for the previous one to fully finish.`;
+  }
+  $("#p-no").addEventListener("click", () => { piped = false; pressed($("#p-no"), true); pressed($("#p-yes"), false); render(); });
+  $("#p-yes").addEventListener("click", () => { piped = true; pressed($("#p-yes"), true); pressed($("#p-no"), false); render(); });
+  render();
+})();
+
+/* ================= 5.1 boot chain ================= */
+(() => {
+  const ST = [
+    { n: "Power", s: "0 s", where: "Power supply, CPU reset line", does: "Voltages stabilize. The CPU resets and its PC points to a fixed address wired to the firmware chip.", next: "Firmware, straight from the flash chip", fail: "Nothing on screen, fans may spin: hardware or power problem.", ram: [] },
+    { n: "UEFI", s: "~1–5 s", where: "Flash chip on the motherboard", does: "Tests and initializes CPU, RAM, GPU, USB and disks (POST). Reads its boot list, then looks in the ESP.", next: "GRUB (grubx64.efi from the ESP)", fail: "Beeps or a vendor logo stuck: fix in BIOS setup (Del/F2 on MSI).", ram: [["UEFI", 3, "--muted"]] },
+    { n: "GRUB", s: "menu, ~5 s", where: "ESP + /boot/grub on the Linux partition", does: "Shows the menu. Loads the chosen kernel and initramfs into RAM, passes the kernel command line.", next: "Linux kernel", fail: "\"grub rescue>\" prompt: reinstall GRUB from the CachyOS USB.", ram: [["UEFI", 3, "--muted"], ["GRUB", 3, "--trace"]] },
+    { n: "Kernel", s: "~1–2 s", where: "/boot/vmlinuz-linux-cachyos", does: "Takes over all hardware: memory management, drivers, CPU cores. Unpacks the initramfs and uses it to find the real root disk.", next: "systemd, as process 1", fail: "Kernel panic: boot an older kernel or a snapshot from GRUB.", ram: [["kernel", 6, "--accent"], ["initramfs", 5, "--live"]] },
+    { n: "systemd", s: "~2–5 s", where: "/usr/lib/systemd/systemd on the root filesystem", does: "Process 1. Starts services in parallel: network, sound, Bluetooth, login screen. Logs everything to the journal.", next: "Login screen (display manager)", fail: "Emergency shell: read journalctl -b, check systemctl --failed.", ram: [["kernel", 6, "--accent"], ["systemd + services", 10, "--trace"]] },
+    { n: "Desktop", s: "you", where: "Your home folder and apps", does: "You log in. KDE (or your chosen desktop) starts, then your apps: Steam, browser, FreeCAD.", next: "Your programs, each a process managed by the kernel", fail: "Black screen after login: try another session or a TTY (Ctrl+Alt+F3).", ram: [["kernel", 6, "--accent"], ["services", 8, "--trace"], ["desktop", 14, "--live"], ["apps + file cache", 30, "--muted"]] },
+  ];
+  let cur = 0, timer = null, powered = false, seq = false;
+  const chain = $("#chain");
+  ST.forEach((s, i) => { const b = document.createElement("button"); b.innerHTML = `${s.n}<small>${s.s}</small>`; b.addEventListener("click", () => { seq = false; stopSeq(); powered = true; show(i); }); chain.appendChild(b); });
+
+  // where each stage's code comes from on the SSD (x of that partition), what the CPU runs, and what the screen shows
+  const SRC = [null, null, 280, 340, 400, 460];
+  const RUN = ["PC → firmware", "UEFI", "GRUB", "Linux kernel", "kernel + systemd", "kernel + your apps"];
+  const svg = $("#boot-svg");
+  function diagram() {
+    const s = svg; s.innerHTML = "";
+    const i = cur, on = powered;
+    const ink = cv("--ink"), muted = cv("--muted"), line = cv("--line"), live = cv("--live"), off = cv("--off"), accent = cv("--accent"), panel = cv("--panel"), soft = cv("--soft");
+    const scrBg = cv("--term-bg"), scrFg = cv("--term-fg"), scrHi = cv("--term-hi");
+    const t = (x, y, txt, o = {}) => { const e = el("text", { x, y, "text-anchor": o.a || "middle", "font-size": o.sz || 12, fill: o.f || ink, "font-family": o.mono ? "monospace" : "sans-serif", "font-weight": o.w || 600 }, s); e.textContent = txt; return e; };
+    const busy = { chip: on && i === 1, cpu: on, ram: on && i >= 1, scr: on && i >= 1, ssd: on && i >= 2 };
+    const box = (x, y, w, h, act, fill = panel) => el("rect", { x, y, width: w, height: h, rx: 6, fill, stroke: act ? accent : on ? muted : line, "stroke-width": act ? 2.5 : 1.5 }, s);
+    const wire = (d, act) => el("path", { d, class: "wire", "stroke-width": 3, stroke: act ? live : off }, s);
+    const flow = d => { // code being copied: a lit wire with dots moving towards the destination
+      el("path", { d, class: "wire", "stroke-width": 3, stroke: live }, s);
+      const dots = el("path", { d, fill: "none", stroke: panel, "stroke-width": 3, "stroke-dasharray": "2 12", "stroke-linecap": "round" }, s);
+      el("animate", { attributeName: "stroke-dashoffset", from: "28", to: "0", dur: "0.6s", repeatCount: "indefinite" }, dots);
+    };
+
+    // wires first, so the parts sit on top of them
+    wire("M64,52 H140 V105 H170", on);           // power
+    wire("M110,167 H140 V150 H170", on && i === 1); // firmware chip -> CPU (SPI)
+    wire("M280,155 H340", on && i >= 1);           // memory bus
+    wire("M225,90 V59 H340", on && i >= 1);        // video out
+    wire("M225,180 V212", on && i >= 2);           // PCIe to the SSD
+    t(155, 144, "SPI", { sz: 10, f: muted, w: 400 }); t(310, 148, "memory bus", { sz: 9, f: muted, w: 400 });
+    t(219, 202, "PCIe", { sz: 10, f: muted, w: 400, a: "end" }); t(290, 53, "video", { sz: 10, f: muted, w: 400 });
+
+    // power button
+    const pg = el("g", { class: "pwr" + (on && i === 0 ? " down" : ""), style: "cursor:pointer", role: "button", "aria-label": "Press power" }, s);
+    el("circle", { cx: 42, cy: 52, r: 22, fill: on ? live : panel, stroke: on ? accent : ink, "stroke-width": 2 }, pg);
+    el("path", { d: "M34.5,45.5 A11,11 0 1 0 49.5,45.5", fill: "none", stroke: on ? panel : ink, "stroke-width": 2.5, "stroke-linecap": "round" }, pg);
+    el("path", { d: "M42,39 V51", stroke: on ? panel : ink, "stroke-width": 2.5, "stroke-linecap": "round" }, pg);
+    if (!on) el("circle", { cx: 42, cy: 52, r: 28, fill: "none", stroke: accent, "stroke-width": 2, "stroke-dasharray": "4 4" }, s);
+    pg.addEventListener("click", run);
+    t(42, 92, on ? "power" : "press me", { sz: 11, f: on ? muted : accent });
+
+    // firmware chip, with little legs
+    for (let k = 0; k < 4; k++) { el("path", { d: `M${32 + k * 20},140 V134 M${32 + k * 20},194 V200`, stroke: on ? muted : line, "stroke-width": 2 }, s); }
+    box(20, 140, 90, 54, busy.chip);
+    t(65, 162, "Firmware chip", { sz: 11 }); t(65, 178, "UEFI lives here", { sz: 10, f: muted, w: 400 });
+
+    // CPU
+    box(170, 90, 110, 90, busy.cpu, on ? panel : soft);
+    t(225, 112, "CPU"); t(225, 126, "i7-10750H", { sz: 10, f: muted, w: 400 });
+    t(225, 150, on ? "running:" : "off", { sz: 10, f: muted, w: 400 });
+    if (on) t(225, 166, RUN[i], { sz: RUN[i].length > 12 ? 10 : 12, f: accent });
+
+    // RAM: what's loaded right now
+    box(340, 120, 160, 80, busy.ram);
+    t(350, 135, "RAM (16 GB)", { a: "start", sz: 11 });
+    const rows = on ? ST[i].ram : [];
+    if (!rows.length) t(420, 168, on ? "empty: lost at power-off" : "empty", { sz: 10, f: muted, w: 400 });
+    rows.forEach(([n, , c], k) => { el("rect", { x: 350, y: 141 + k * 14, width: 140, height: 12, rx: 3, fill: cv(c) }, s); t(356, 150.5 + k * 14, n, { a: "start", sz: 9.5, f: panel, mono: true }); });
+
+    // screen
+    el("rect", { x: 340, y: 14, width: 160, height: 90, rx: 6, fill: scrBg, stroke: busy.scr ? accent : on ? muted : line, "stroke-width": busy.scr ? 2.5 : 1.5 }, s);
+    const st = (x, y, txt, o = {}) => t(x, y, txt, { mono: true, sz: 9, f: scrFg, w: 400, a: "start", ...o });
+    if (on && i === 1) { t(420, 64, "MSI", { sz: 22, f: scrHi, w: 800 }); st(420, 84, "press F11 for boot menu", { a: "middle", sz: 8 }); }
+    if (on && i === 2) { st(350, 30, "GNU GRUB", { f: scrHi }); el("rect", { x: 348, y: 37, width: 144, height: 13, fill: scrFg, opacity: 0.85 }, s);
+      st(352, 47, "*CachyOS", { f: scrBg }); st(352, 62, " Windows Boot Manager"); st(352, 77, " Advanced options"); }
+    if (on && i === 3) ["[0.000] Linux version 6.x", "[0.120] CPU: i7-10750H", "[0.400] nvme0n1: p1 … p6", "[1.100] unpacking initramfs", "[1.600] mounting / (btrfs)"].forEach((l, k) => st(348, 30 + k * 14, l, { sz: 8 }));
+    if (on && i === 4) { el("circle", { cx: 420, cy: 42, r: 11, fill: scrFg, opacity: 0.8 }, s); st(420, 68, "ernesto", { a: "middle" });
+      el("rect", { x: 380, y: 76, width: 80, height: 13, rx: 3, fill: "none", stroke: scrFg }, s); st(386, 86, "••••••", { sz: 8 }); }
+    if (on && i === 5) { el("rect", { x: 341, y: 15, width: 158, height: 74, fill: cv("--trace"), opacity: 0.55 }, s);
+      el("rect", { x: 341, y: 89, width: 158, height: 14, fill: "#000", opacity: 0.6 }, s);
+      [352, 366, 380, 394].forEach(x => el("rect", { x, y: 92, width: 9, height: 8, rx: 2, fill: scrFg }, s));
+      el("rect", { x: 380, y: 30, width: 70, height: 44, rx: 3, fill: scrBg, stroke: scrFg }, s); st(386, 44, "konsole", { sz: 8 }); st(386, 58, "$ _", { sz: 8, f: scrHi }); }
+    t(334, 24, "screen", { sz: 10, f: muted, w: 400, a: "end" });
+
+    // SSD with its partitions; the one being read lights up
+    box(130, 212, 370, 78, busy.ssd);
+    t(140, 228, "SSD (nvme0n1)", { a: "start", sz: 11 });
+    const part = (x, w, name, x0) => { const act = on && SRC[i] === x0; el("rect", { x, y: 236, width: w, height: 32, rx: 3, fill: act ? live : soft, stroke: act ? accent : muted, "stroke-width": act ? 2 : 1 }, s);
+      t(x + w / 2, 256, name, { sz: 10, f: act ? panel : ink, mono: true }); };
+    part(140, 108, "Windows", -1); part(255, 50, "ESP", 280); part(310, 60, "/boot", 340); part(370, 60, "/usr", 400); part(430, 60, "/home", 460);
+    t(400, 283, "CachyOS (btrfs)", { sz: 10, f: muted, w: 400 }); t(194, 283, "C: drive", { sz: 10, f: muted, w: 400 });
+
+    // what is being copied right now, drawn last so it sits on top
+    if (on && i === 0) flow("M64,52 H140 V105 H170");
+    if (on && i === 1) { flow("M110,167 H140 V150 H170"); flow("M280,155 H340"); }
+    if (on && SRC[i]) { flow(`M${SRC[i]},236 V204 H225 V180`); flow("M280,155 H340"); }
+  }
+
+  function show(i) {
+    cur = i; diagram(); if (powered) mo.kick(); $$("button", chain).forEach((b, k) => { b.classList.toggle("on", k === i); b.classList.toggle("done", k < i); });
+    const s = ST[i];
+    $("#stage").innerHTML = `<div><small>Code lives in</small>${s.where}</div><div><small>What it does</small>${s.does}</div><div><small>Loads and jumps to</small>${s.next}</div><div><small>If it breaks</small>${s.fail}</div>`;
+    const used = s.ram.reduce((a, r) => a + r[1], 0);
+    $("#ram").innerHTML = s.ram.map(([n, wv, c]) => `<div style="flex-basis:${wv}%;background:var(${c})">${n}</div>`).join("") + `<div style="flex:1;color:var(--muted)">${used ? "free" : "empty: DRAM lost everything when power was off"}</div>`;
+  }
+  // seq: the power-on sequence is playing through the stages (a stop pauses it, a start resumes it)
+  function stopSeq() { if (timer) { clearInterval(timer); timer = null; } }
+  function startSeq() { stopSeq(); timer = setInterval(() => { if (cur >= ST.length - 1) { seq = false; return stopSeq(); } show(cur + 1); }, reduceMotion ? 600 : 2200); }
+  function run() { seq = true; powered = true; show(0); startSeq(); }
+  $("#boot-go").addEventListener("click", run);
+  const mo = motion(svg.closest(".bench"), { after: $("#boot-go"),
+    start: () => { svg.unpauseAnimations(); if (seq && !timer) startSeq(); }, stop: () => { svg.pauseAnimations(); stopSeq(); } });
+  svg.pauseAnimations();
+  show(0); onTheme(diagram);
+})();
+
+/* ================= 5.2 disk ================= */
+(() => {
+  const P = [
+    ["Windows ESP", "FAT32", 0.2, "--accent", "Windows Boot Manager (bootmgfw.efi)"],
+    ["Microsoft reserved", "—", 0.016, "--muted", "Windows housekeeping, no files"],
+    ["Windows C:", "NTFS", 296, "--trace", "Windows, after shrinking by ~200 GB"],
+    ["CachyOS ESP", "FAT32", 1, "--accent", "GRUB (grubx64.efi). The installer wanted at least 512 MB"],
+    ["CachyOS", "Btrfs", 214, "--live", "Linux root: /, /home, /boot (kernel + initramfs), snapshots"],
+    ["Windows Recovery", "NTFS", 0.8, "--muted", "Windows repair tools"],
+  ];
+  const total = P.reduce((a, p) => a + p[2], 0);
+  $("#disk").innerHTML = P.map(p => `<div title="${p[0]}" style="flex-basis:${Math.max(0.6, p[2] / total * 100)}%;background:var(${p[3]})">${p[2] > 50 ? p[0] : ""}</div>`).join("");
+  $("#disk-t").innerHTML = "<tr><th>Partition</th><th>Format</th><th>Size</th><th>Holds</th></tr>" + P.map(p => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(${p[3]});margin-right:6px"></span>${p[0]}</td><td class="num">${p[1]}</td><td class="num">${p[2] < 1 ? Math.round(p[2] * 1000) + " MB" : "~" + p[2] + " GB"}</td><td>${p[4]}</td></tr>`).join("");
+})();
+
+/* ================= 5.3 GRUB ================= */
+(() => {
+  const items = ["CachyOS", "Advanced options for CachyOS", "CachyOS snapshots", "Windows Boot Manager (on /dev/nvme0n1p1)", "UEFI Firmware Settings"];
+  const info = [
+    "Boots the default kernel. Press e to see the commands behind it.",
+    "Older kernels and a fallback initramfs. Pick one when an update broke the newest kernel.",
+    "Boot a Btrfs snapshot taken before an update (CachyOS sets this up). The undo button for your system.",
+    "Hands control to Windows' own boot manager on the ESP. GRUB chain-loads it.",
+    "Restarts into the UEFI setup (the old \"BIOS\" screen).",
+  ];
+  const term = $("#grub"); let sel = 0, mode = "menu", left = 5, timer = null;
+  const edit = `setparams 'CachyOS'
+
+    load_video
+    set gfxpayload=keep
+    insmod gzio
+    insmod part_gpt
+    <span class="hi">insmod btrfs</span>
+    <span class="hi">search --no-floppy --fs-uuid --set=root 3f2a9c1e-…</span>
+    echo    'Loading Linux linux-cachyos ...'
+    <span class="hi">linux   /@/boot/vmlinuz-linux-cachyos root=UUID=3f2a9c1e-… rw rootflags=subvol=/@ quiet splash</span>
+    echo    'Loading initial ramdisk ...'
+    <span class="hi">initrd  /@/boot/initramfs-linux-cachyos.img</span>`;
+  function render() {
+    if (mode === "menu") {
+      term.innerHTML = `<div class="ttl">GNU GRUB  version 2.12</div><div class="box">${items.map((t, i) => `<div class="it ${i === sel ? "sel" : ""}" data-i="${i}">${i === sel ? "*" : " "}${t}</div>`).join("")}</div>
+        <div class="foot">Use ↑ and ↓ to select. Enter to boot, 'e' to edit the commands before booting.${left > 0 ? ` The highlighted entry will be executed automatically in ${left}s.` : ""}<br><span class="hi">${info[sel]}</span></div>`;
+      $$(".it", term).forEach(d => d.addEventListener("click", () => { sel = +d.dataset.i; stopTimer(); render(); }));
+      $("#grub-notes").hidden = true;
+    } else if (mode === "edit") {
+      term.innerHTML = `<pre>${edit}</pre><div class="foot">Minimum Emacs-like screen editing is supported. Press Ctrl-x or F10 to boot, Ctrl-c or F2 for a command line, or Esc to discard edits and return to the GRUB menu.</div>`;
+      $("#grub-notes").hidden = false;
+    } else {
+      term.innerHTML = `<pre>${sel === 3 ? "Starting Windows Boot Manager…" : sel === 4 ? "Rebooting into UEFI setup…" : `Loading Linux linux-cachyos ...\nLoading initial ramdisk ...\n\n<span class="hi">GRUB's job is done. It jumps into the kernel and is gone from memory.</span>\nNext: the kernel takes over (see the boot chain above).`}</pre>`;
+      $("#grub-notes").hidden = true;
+    }
+  }
+  function stopTimer() { if (timer) { clearInterval(timer); timer = null; } left = 0; }
+  term.addEventListener("keydown", e => {
+    if (mode === "menu" && (e.key === "ArrowDown" || e.key === "ArrowUp")) { e.preventDefault(); stopTimer(); sel = (sel + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length; render(); }
+    else if (e.key === "e" && mode === "menu") { stopTimer(); if (sel === 0) { mode = "edit"; render(); } }
+    else if (e.key === "Escape") { mode = "menu"; render(); }
+    else if (e.key === "Enter") { stopTimer(); mode = "boot"; render(); }
+  });
+  term.addEventListener("click", () => { stopTimer(); render(); term.focus({ preventScroll: true }); });
+  $("#grub-e").addEventListener("click", () => { stopTimer(); sel = 0; mode = "edit"; render(); });
+  $("#grub-esc").addEventListener("click", () => { mode = "menu"; render(); });
+  $("#grub-enter").addEventListener("click", () => { stopTimer(); mode = "boot"; render(); });
+  render();
+  if (!reduceMotion) timer = setInterval(() => { left--; if (left <= 0) { stopTimer(); } if (mode === "menu") render(); }, 1000);
+})();
+
+/* ================= 6.1 rings ================= */
+(() => {
+  const R = [
+    { r: 120, n: "Ring 3", t: "User mode", d: "Where every app runs: your browser, Steam, the shell, even programs started by root. Instructions that touch hardware or memory mappings are forbidden here. To do anything with hardware, a program must make a system call." },
+    { r: 92, n: "Rings 2 and 1", t: "Unused on Linux", d: "x86 offers four rings, but Linux (and Windows) only use ring 0 and ring 3. Rings 1 and 2 were meant for drivers and are left empty." },
+    { r: 64, n: "Ring 0", t: "Kernel mode", d: "The Linux kernel: scheduler, memory manager, drivers, filesystems, network stack. Every instruction is allowed. A bug here can crash the whole machine, which is why drivers matter so much." },
+    { r: 30, n: "Hardware", t: "CPU, RAM, devices", d: "Only reachable from ring 0. The CPU itself checks the current ring before each privileged instruction." },
+  ];
+  let cur = 0;
+  function render() {
+    const s = $("#rings"); s.innerHTML = "";
+    R.forEach((g, i) => { const c = el("circle", { cx: 130, cy: 130, r: g.r, fill: i === cur ? cv("--accent") : (i % 2 ? cv("--soft") : cv("--bg")), stroke: cv("--ink"), "stroke-width": 1.5, style: "cursor:pointer" }, s);
+      c.addEventListener("click", () => { cur = i; render(); }); });
+    const lab = [[130, 24, "3"], [130, 52, "2 · 1"], [130, 80, "0"], [130, 135, "HW"]];
+    lab.forEach(([x, y, t], i) => { const e = el("text", { x, y, "text-anchor": "middle", "font-size": 14, "font-family": "monospace", "font-weight": 600, fill: i === cur ? cv("--panel") : cv("--ink"), "pointer-events": "none" }, s); e.textContent = t; });
+    const g = R[cur]; $("#ringinfo").innerHTML = `<h3 style="margin:0">${g.n} · ${g.t}</h3><p>${g.d}</p>`;
+  }
+  render(); onTheme(render);
+})();
+
+/* ================= 6.2 syscall ================= */
+(() => {
+  const S = [
+    ["user", "cat", "cat calls <code>read(file, buffer, 4096)</code>. The C library puts the request number (0 = read, on x86-64 Linux) in register rax and the arguments in other registers."],
+    ["hw", "CPU", "cat runs the <code>syscall</code> instruction. The CPU switches to ring 0 and jumps to the kernel's entry point, an address the kernel registered at boot. cat can't choose where it lands."],
+    ["kernel", "kernel", "The kernel checks the request: is this a file cat opened? Is it allowed to read it? Does the buffer address really belong to cat's memory?"],
+    ["kernel", "kernel", "Is the file already in the <b>page cache</b> (RAM)? If you read it recently, yes: skip straight to the copy step. This is why the second read of a file is instant."],
+    ["kernel", "kernel", "Not cached: the filesystem (Btrfs) works out which blocks on the SSD hold the file, and the NVMe driver sends the SSD a read command."],
+    ["kernel", "scheduler", "SSDs are slow compared to the CPU (bench 3.4). cat is marked <b>waiting</b> and the scheduler runs another process meanwhile. No CPU time is wasted."],
+    ["hw", "SSD", "The SSD has the data in RAM and raises an <b>interrupt</b>. The CPU pauses whatever it was doing and runs the kernel's handler, which marks cat <b>ready</b>."],
+    ["kernel", "kernel", "When cat gets a core again, the kernel copies the file's bytes into cat's buffer."],
+    ["hw", "CPU", "The kernel runs <code>sysret</code>: back to ring 3, at the instruction right after cat's syscall. rax now holds the number of bytes read."],
+    ["user", "cat", "cat has the text. To show it, it makes another system call, <code>write()</code> to the terminal, and the whole dance repeats."],
+  ];
+  let cur = 0; const list = $("#steps");
+  list.innerHTML = S.map(s => `<li><span class="who">${s[1]}</span><span>${s[2]}</span></li>`).join("");
+  $$("li", list).forEach((li, i) => li.addEventListener("click", () => { cur = i; render(); }));
+  function render() { $$("li", list).forEach((li, i) => li.classList.toggle("on", i === cur)); $$("#lanes .lane").forEach(l => l.classList.toggle("on", l.dataset.l === S[cur][0])); $("#sc-next").textContent = cur === S.length - 1 ? "Done ✓ (start over)" : "Next step"; }
+  $("#sc-next").addEventListener("click", () => { cur = (cur + 1) % S.length; render(); });
+  $("#sc-reset").addEventListener("click", () => { cur = 0; render(); });
+  render();
+})();
+
+/* ================= 6.3 scheduler ================= */
+(() => {
+  const c = $("#sched");
+  const P = [
+    { n: "Firefox", col: "--trace", burst: [3, 5], wait: [2, 4] },
+    { n: "Steam download", col: "--live", burst: [1, 1], wait: [1, 3] },
+    { n: "Music player", col: "--accent", burst: [1, 1], wait: [3, 3] },
+    { n: "Terminal", col: "--good", burst: [1, 2], wait: [Infinity, Infinity] },
+    { n: "Updater", col: "--muted", burst: [4, 8], wait: [1, 2] },
+  ];
+  const rnd = ([a, b]) => a === Infinity ? Infinity : a + Math.floor(Math.random() * (b - a + 1));
+  P.forEach((p, i) => { p.state = i === 3 ? "waiting" : "ready"; p.left = rnd(p.burst); p.wl = i === 3 ? Infinity : 0; });
+  let queue = [0, 1, 2, 4], cores = [null, null], hist = [], cs = 0, irq = 0, slice = 0, iv = 0;
+  function tick() {
+    // waiting → ready (interrupts)
+    P.forEach((p, i) => { if (p.state === "waiting" && p.wl !== Infinity) { p.wl--; if (p.wl <= 0) { p.state = "ready"; p.left = rnd(p.burst); queue.push(i); irq++; } } });
+    // put running processes back (time slice over) — preempt after each slice for round robin
+    cores.forEach((ci, k) => { if (ci !== null && P[ci].state === "running") { P[ci].state = "ready"; queue.push(ci); } });
+    const prev = cores.slice(); const now = [null, null];
+    for (let k = 0; k < 2; k++) { if (queue.length) { const i = queue.shift(); P[i].state = "running"; now[k] = i; if (prev[k] !== i) cs++; } }
+    cores = now;
+    // run one slice, record who ran, then block anyone whose burst is over (waiting for I/O)
+    hist.push(now.slice()); if (hist.length > 200) hist.shift();
+    now.forEach(i => { if (i === null) return; const p = P[i]; p.left--; if (p.left <= 0) { p.state = "waiting"; p.wl = rnd(p.wait); } });
+    cores = now.map(i => (i !== null && P[i].state === "running") ? i : null);
+    slice++; render();
+  }
+  function render() {
+    const { x, w, h } = ctx2d(c); const L = 64, cw = 16, rh = (h - 30) / 2;
+    const n = Math.min(hist.length, Math.floor((w - L - 4) / cw)); const start = hist.length - n;
+    x.font = "11px " + cv("--f-mono"); x.fillStyle = cv("--muted"); x.textAlign = "left";
+    ["core 0", "core 1"].forEach((t, k) => x.fillText(t, 4, 12 + rh * k + rh / 2 + 4));
+    for (let j = 0; j < n; j++) { const col = hist[start + j]; for (let k = 0; k < 2; k++) { const X = L + j * cw, Y = 12 + rh * k;
+      if (col[k] === null) { x.strokeStyle = cv("--line"); x.strokeRect(X + 1, Y + 2, cw - 2, rh - 4); }
+      else { x.fillStyle = cv(P[col[k]].col); x.fillRect(X + 1, Y + 2, cw - 2, rh - 4); } } }
+    x.fillStyle = cv("--muted"); x.fillText("time → (each column is one slice, a few milliseconds)", L, h - 6);
+    $("#plist").innerHTML = P.map(p => `<div><i style="background:var(${p.col})"></i>${p.n}<span class="st ${p.state}">${p.state}</span></div>`).join("");
+    $("#s-stats").textContent = `slices: ${slice} · context switches: ${cs} · interrupts: ${irq}`;
+  }
+  $("#s-key").addEventListener("click", () => { const t = P[3]; irq++; if (t.state === "waiting") { t.state = "ready"; t.left = rnd(t.burst); queue.unshift(3); } if (!mo.on) tick(); else render(); });
+  const mo = motion(c.closest(".bench"), { btn: $("#s-play"), labels: ["▶ Play", "⏸ Pause"], auto: true,
+    start: () => { iv = setInterval(tick, 450); }, stop: () => clearInterval(iv) });
+  for (let i = 0; i < 30; i++) tick();
+  onTheme(render);
+})();
+
+/* ================= 6.4 virtual memory ================= */
+(() => {
+  const pages = ["code", "libc (shared)", "data", "heap", "— unmapped —", "stack"];
+  const init = () => ({ A: [3, 5, 0, 6, null, 1], B: [7, 5, 2, "s0", null, 4] });
+  let map = init(), sel = null, fault = null;
+  const yRow = i => 40 + i * 52; const yFrame = f => 30 + f * 36;
+  function render() {
+    const s = $("#vm"); s.innerHTML = ""; const ink = cv("--ink"), muted = cv("--muted"), line = cv("--line"), acc = cv("--accent"), bg = cv("--bg"), soft = cv("--soft");
+    const txt = (x, y, t, a = "middle", f = ink, sz = 12, w = 400) => { const e = el("text", { x, y, "text-anchor": a, "font-size": sz, "font-family": "monospace", fill: f, "font-weight": w, "pointer-events": "none" }, s); e.textContent = t; return e; };
+    txt(70, 18, "Process A (virtual)", "middle", muted, 11, 600); txt(280, 18, "RAM (physical frames)", "middle", muted, 11, 600); txt(490, 18, "Process B (virtual)", "middle", muted, 11, 600);
+    // lines
+    ["A", "B"].forEach(p => map[p].forEach((f, i) => {
+      if (f === null) return; const xs = p === "A" ? 130 : 430; const xe = p === "A" ? 225 : 335;
+      const ye = typeof f === "string" ? 360 + 22 : yFrame(f) + 14;
+      const on = sel && sel.p === p && sel.i === i;
+      el("path", { d: `M${xs},${yRow(i) + 18} C${(xs + xe) / 2},${yRow(i) + 18} ${(xs + xe) / 2},${ye} ${xe},${ye}`, fill: "none", stroke: on ? acc : line, "stroke-width": on ? 3 : 1.5, "stroke-dasharray": typeof f === "string" ? "5 4" : "0" }, s);
+    }));
+    // frames
+    for (let f = 0; f < 9; f++) { const used = ["A", "B"].some(p => map[p].includes(f)); const on = sel && map[sel.p][sel.i] === f;
+      el("rect", { x: 225, y: yFrame(f), width: 110, height: 28, rx: 4, fill: on ? acc : used ? soft : bg, stroke: ink, "stroke-width": 1 }, s);
+      const owners = ["A", "B"].filter(p => map[p].includes(f));
+      const owner = owners.length > 1 ? "A+B libc" : owners.length ? owners[0] + " " + pages[map[owners[0]].indexOf(f)].split(" ")[0] : "free";
+      txt(280, yFrame(f) + 18, `frame ${f} · ${owner}`, "middle", on ? cv("--panel") : used ? ink : muted, 10); }
+    el("rect", { x: 225, y: 360, width: 110, height: 44, rx: 4, fill: sel && map[sel.p][sel.i] === "s0" ? acc : bg, stroke: ink, "stroke-dasharray": "4 3" }, s);
+    txt(280, 378, "SWAP (on SSD)", "middle", muted, 10, 600); txt(280, 394, map.B[3] === "s0" ? "B: heap" : "empty", "middle", ink, 10);
+    // pages
+    ["A", "B"].forEach(p => pages.forEach((name, i) => { const x0 = p === "A" ? 10 : 430; const on = sel && sel.p === p && sel.i === i; const bad = fault && fault.p === p && fault.i === i;
+      const r = el("rect", { x: x0, y: yRow(i), width: 120, height: 36, rx: 5, fill: bad ? cv("--bad") : on ? acc : cv("--panel"), stroke: map[p][i] === null ? muted : ink, "stroke-dasharray": map[p][i] === null ? "4 3" : "0", style: "cursor:pointer" }, s);
+      r.addEventListener("click", () => click(p, i));
+      txt(x0 + 60, yRow(i) + 15, "0x" + (i * 0x1000).toString(16).padStart(4, "0"), "middle", on || bad ? cv("--panel") : muted, 10);
+      txt(x0 + 60, yRow(i) + 29, name, "middle", on || bad ? cv("--panel") : ink, 11, 600); }));
+  }
+  function click(p, i) {
+    sel = { p, i }; fault = null; const f = map[p][i]; const m = $("#vmmsg"); m.classList.remove("bad"); const va = "0x" + (i * 0x1000).toString(16).padStart(4, "0");
+    if (f === null) { fault = { p, i }; sel = null; m.classList.add("bad"); m.textContent = `Process ${p} touched ${va}: nothing is mapped there. The MMU raises a fault, the kernel finds no valid mapping → "Segmentation fault". Only process ${p} is stopped; the other keeps running.`; }
+    else if (f === "s0") { m.textContent = `${va} is in swap. Page fault! The kernel pauses B, reads the page from the SSD into free frame 8, updates B's page table, and resumes B. B never notices, it just took a little longer.`; render(); setTimeout(() => { map.B[3] = 8; render(); }, 900); return; }
+    else { const shared = ["A", "B"].filter(q => map[q].includes(f)).length > 1;
+      m.textContent = `Process ${p} ${va} (${pages[i]}) → physical frame ${f} (address 0x${(f * 0x1000).toString(16)}).` + (shared ? " Both processes map their libc here: one copy in RAM, shared read-only." : " No other process can reach this frame."); }
+    render();
+  }
+  $("#vm-reset").addEventListener("click", () => { map = init(); sel = null; fault = null; $("#vmmsg").textContent = "Click a page."; $("#vmmsg").classList.remove("bad"); render(); });
+  render(); onTheme(render);
+})();
+
+})();
+</script>
+
+</body></html>
