@@ -92,7 +92,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 - **gh** (GitHub CLI). Under Wayland it needed `wl-clipboard` to copy the login code.
 - **Firefox** with a password manager, uBlock Origin, strict tracking protection and HTTPS-only.
 - **Obsidian**: my notes are back, synced with git like on Windows.
-- **Claude Code** runs here now, same setup as on Windows (I'm still considering switching in the future to local models or another provider for frontier AI capabilities).
+- **My AI coding assistant** runs here now, same setup as on Windows (I'm still considering switching in the future to local models or another provider for frontier AI capabilities).
 
 ## 🎮 Gaming
 
