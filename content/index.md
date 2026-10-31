@@ -11,5 +11,7 @@ I use this blog to document what I learn and how I progress in the topics I'm in
 
 ## Latest posts
 
-- 2026-10-30 · [From Volts to Linux: how a computer works, from the ground up](posts/from-volts-to-linux)
-- 2026-10-30 · [Dual-booting CachyOS on a gaming laptop, layer by layer](posts/dual-booting-cachyos)
+📘 Learning page · 🛠️ Project log · 💡 Quick tip
+
+- 📘 2026-10-30 · [From Volts to Linux: how a computer works, from the ground up](posts/from-volts-to-linux)
+- 🛠️ 2026-10-30 · [Dual-booting CachyOS on a gaming laptop, layer by layer](posts/dual-booting-cachyos)

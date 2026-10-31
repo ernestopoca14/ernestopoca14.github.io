@@ -1,7 +1,7 @@
 ---
 title: "From Volts to Linux: how a computer works, from the ground up"
 date: 2026-10-30
-tags: [computing/linux, computing/computer-science, engineering/electronics]
+tags: [type/learning, computing/linux, computing/computer-science, engineering/electronics]
 description: Six layers, from a voltage on a wire to the operating system on my laptop, each built from the one below.
 ---
 
