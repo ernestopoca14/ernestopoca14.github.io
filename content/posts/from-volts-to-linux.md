@@ -24,6 +24,10 @@ Each layer hides the details of the one below, so you can think about one level 
 
 Voltage on a wire is analog and noisy. Chips use **thresholds**: above one line is 1, below another is 0. With only two levels far apart, a copy of a copy is still perfect. That's why computers are digital.
 
+<img src="../images/from-volts-to-linux/volt.png" alt="Noisy voltage signal crossing the thresholds for 1 and 0" width="420">
+
+*A noisy signal still reads cleanly: above the upper line is 1, below the lower line is 0.*
+
 The same byte `01000001` is the number 65, the letter `A` or a shade of grey. **The bits never change; the program reading them decides what they mean.**
 
 ## 2️⃣ Transistors and logic gates
@@ -32,9 +36,17 @@ A transistor is a switch flipped by electricity, so one can flip the next. Two i
 
 My favourite part: adding two bits. The sum is **XOR** and the carry is **AND**. Chain 64 of those and you have the adder in my CPU. The gates don't understand addition; electricity just can't flow any other way.
 
+<img src="../images/from-volts-to-linux/ha.png" alt="Half adder: inputs A and B go to an XOR gate for the sum and an AND gate for the carry" width="420">
+
+*A half adder: XOR gives the sum, AND gives the carry.*
+
 ## 3️⃣ Memory
 
 Gates forget as soon as the input changes. Feed the output back into the input and the loop holds itself: a stored bit.
+
+<img src="../images/from-volts-to-linux/latch.png" alt="SR latch: two NOR gates whose outputs feed each other" width="420">
+
+*Two NOR gates feeding each other: the loop that remembers one bit.*
 
 | Memory | How it stores a bit | Without power? |
 |---|---|---|
@@ -54,11 +66,19 @@ The CPU starts at a fixed address on the flash chip: the **firmware** (UEFI). Fr
 
 **UEFI → GRUB → Linux kernel → systemd → login → desktop**
 
+<img src="../images/from-volts-to-linux/boot.png" alt="Laptop at power-on: firmware chip, CPU, empty RAM and the SSD partitions" width="420">
+
+*My laptop at power-on: the CPU, an empty RAM, the firmware chip and the SSD.*
+
 I watched this chain for real when I set up my dual boot: [my CachyOS post](dual-booting-cachyos).
 
 ## 6️⃣ The operating system
 
 Hundreds of programs share one CPU, one RAM and one SSD. The kernel makes that work by being **the only program allowed to touch the hardware**.
+
+<img src="../images/from-volts-to-linux/rings.png" alt="Privilege rings: ring 3 outside, the kernel in ring 0 next to the hardware" width="300">
+
+*Privilege rings: apps run in the outer ring, only the kernel touches the hardware.*
 
 | Mechanism | What it does |
 |---|---|
@@ -73,6 +93,6 @@ Hundreds of programs share one CPU, one RAM and one SSD. The kernel makes that w
 
 ## 🧪 How I studied it
 
-With Claude, I turned my notes into an **interactive page**: flip bits, wire gates, step a tiny CPU, watch the boot chain, with self-check questions per layer. Then I tried each layer on my own machine with real commands.
+With my own AI-assisted study workflow, I turned my notes into an **interactive page**: flip bits, wire gates, step a tiny CPU, watch the boot chain, with self-check questions per layer. Then I tried each layer on my own machine with real commands.
 
 👉 **[Open the interactive "From Volts to Linux" page](/static/learn/from-volts-to-linux.html)**
