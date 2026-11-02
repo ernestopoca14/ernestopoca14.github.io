@@ -25,6 +25,7 @@ Nothing yet.
 ## ⚙️ Engineering & Making
 
 - [Electronics](tags/engineering/electronics)
+- [Making](tags/engineering/making)
 
 [All Engineering & Making posts](tags/engineering)
 
