@@ -2,6 +2,7 @@
 title: "Microcord handles for my mini pliers"
 date: 2026-11-02
 tags: [type/project, engineering/making]
+cssclasses: [small-photos]
 description: I wrapped the handles of two mini pliers in 1.18 mm microcord, for a better grip and a better look, with one cord, scissors and a candle.
 ---
 
