@@ -54,19 +54,7 @@ I think the method is called whipping: you lay a loop of cord along the handle, 
 
 ### 🔵 The water pump pliers (blue)
 
-Same steps, in blue.
-
-![The water pump pliers next to the blue spool before wrapping](images/microcord-pliers-handles/07-blue-start.jpg)
-
-![Starting the loop at the end of the blue handle](images/microcord-pliers-handles/08-blue-loop.jpg)
-
-![Blue wraps working up the handle](images/microcord-pliers-handles/09-blue-wrapping.jpg)
-
-![The blue wrap reaching the head of the pliers](images/microcord-pliers-handles/10-blue-at-head.jpg)
-
-![Pulling the tail to lock the wrap near the head](images/microcord-pliers-handles/11-blue-lock.jpg)
-
-![Trimming the blue cord close to the handle](images/microcord-pliers-handles/12-blue-trim.jpg)
+The water pump pliers got the same steps, in blue.
 
 ## 🧠 What I learned
 
