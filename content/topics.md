@@ -36,5 +36,6 @@ Nothing yet.
 ## 🏠 Homelab
 
 - [Automation](tags/homelab/automation)
+- [Backups](tags/homelab/backups)
 
 [All Homelab posts](tags/homelab)
