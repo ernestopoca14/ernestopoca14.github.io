@@ -37,13 +37,7 @@ None of that was a plan. **I had no second copy of anything**, and I got lucky.
 
 - **New 1 TB SSD**, mounted with **`nofail`**: if it dies, the server still boots and only the apps that need it stop.
 
-```mermaid
-flowchart TD
-  B[Boot] --> Q{Data disk OK?}
-  Q --> OK[Yes:<br/>all apps<br/>run]
-  Q --> E[No, before:<br/>emergency<br/>mode]
-  Q --> P[No, with nofail:<br/>boots, only<br/>its apps stop]
-```
+![At boot: if the data disk fails, the server used to stop; with nofail it keeps running](images/my-hard-drive-died/decision-boot.svg)
 
 - **Encrypted off-site backups** every night of every database, the password manager and app settings, plus [a full restore test](restored-a-backup).
 - **An outside check** that alerts me when the server stops checking in. My monitoring app runs on the same server, so it can't report its own death.

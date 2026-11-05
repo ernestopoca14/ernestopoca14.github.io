@@ -15,13 +15,7 @@ Every night, Proxmox backs up every guest on my home server. The most important 
 
 A restored copy is a full clone. Started normally, it would read my email, send messages as if it were the real server, and write to the same data disk. So the copy had to start **cut off** from everything.
 
-```mermaid
-flowchart LR
-  BK[(Backup)] --> C[Test copy]
-  C -.-x NET[Network<br/>unplugged]
-  C -.-x DATA[(Data disk<br/>removed)]
-  C -.-x GPU[Graphics chip<br/>removed]
-```
+![The backup is restored into a test copy, which is cut off from the network, the data disk and the graphics chip](images/restored-a-backup/isolation-restore.svg)
 
 ## 🛠️ What I did
 

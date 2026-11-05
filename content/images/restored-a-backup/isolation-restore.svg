@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 216" width="480" height="216" role="img" aria-labelledby="isolation-restore-t">
+<title id="isolation-restore-t">The backup is restored into a test copy, which is cut off from the network, the data disk and the graphics chip</title>
+<style>svg{--card:#F7F2EA;--ink:#2E2B27;--muted:#6F6555;--line:#B9A98F;--edge:#6F6555;--accent:#944123;--accent-soft:rgba(148,65,35,.09);--good:#2F7D55;--good-soft:rgba(47,125,85,.10);--bad:#B3261E;--bad-soft:rgba(179,38,30,.08);--font:'Source Sans 3','Source Sans Pro','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}@media (prefers-color-scheme:dark){svg{--card:#13231A;--ink:#E3EFE6;--muted:#93A89A;--line:#3E5848;--edge:#93A89A;--accent:#29B3E3;--accent-soft:rgba(41,179,227,.12);--good:#4FC98A;--good-soft:rgba(79,201,138,.12);--bad:#FF6B5E;--bad-soft:rgba(255,107,94,.10);}}
+.bg{fill:var(--card);stroke:var(--line)}
+.n{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.focus{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.good{fill:var(--good-soft);stroke:var(--good);stroke-width:2}
+.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2}
+.dim{stroke-dasharray:3 3}
+.t{fill:var(--ink);font:500 14px var(--font);text-anchor:middle;dominant-baseline:central}
+.s{fill:var(--muted);font:400 12px var(--font);text-anchor:middle;dominant-baseline:central}
+.k{fill:var(--muted);font:600 10.5px var(--font);letter-spacing:.08em;text-anchor:middle;dominant-baseline:central}
+.e{fill:none;stroke:var(--edge);stroke-width:1.6}
+.cut{fill:none;stroke:var(--bad);stroke-width:1.6;stroke-dasharray:5 4}
+.x{stroke:var(--bad);stroke-width:2.2;stroke-linecap:round}
+.xb{fill:var(--card);stroke:var(--bad);stroke-width:1.5}
+.head{fill:var(--edge)}
+</style>
+<defs><marker id="isolation-restore-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10z"/></marker></defs>
+<rect class="bg" x="0.5" y="0.5" width="479" height="215" rx="10"/>
+<path class="e" d="M104 108 L133 108" marker-end="url(#isolation-restore-a)"/>
+<path class="cut" d="M244 108 L272 108 L272 34 L336 34"/>
+<circle class="xb" cx="304" cy="34" r="9"/><path class="x" d="M299.5 29.5 l9 9 M308.5 29.5 l-9 9"/>
+<path class="cut" d="M244 108 L336 108"/>
+<circle class="xb" cx="290" cy="108" r="9"/><path class="x" d="M285.5 103.5 l9 9 M294.5 103.5 l-9 9"/>
+<path class="cut" d="M244 108 L272 108 L272 182 L336 182"/>
+<circle class="xb" cx="304" cy="182" r="9"/><path class="x" d="M299.5 177.5 l9 9 M308.5 177.5 l-9 9"/>
+<path class="n" data-n="backup" d="M12 84 a46 8 0 0 0 92 0 a46 8 0 0 0 -92 0 v48 a46 8 0 0 0 92 0 v-48"/>
+<text class="t" data-n="backup" x="58" y="108">Backup</text>
+<text class="s" data-n="backup" x="58" y="125">last night</text>
+<rect class="n focus" data-n="copy" x="136" y="84" width="108" height="48" rx="6"/>
+<text class="t" data-n="copy" x="190" y="108">Test copy</text>
+<rect class="n dim" data-n="net" x="336" y="12" width="132" height="44" rx="6"/>
+<text class="t" data-n="net" x="402" y="26">Network</text>
+<text class="s" data-n="net" x="402" y="43">cable unplugged</text>
+<path class="n dim" data-n="disk" d="M336 88 a66 8 0 0 0 132 0 a66 8 0 0 0 -132 0 v40 a66 8 0 0 0 132 0 v-40"/>
+<text class="t" data-n="disk" x="402" y="108">Data disk</text>
+<text class="s" data-n="disk" x="402" y="125">removed</text>
+<rect class="n dim" data-n="gpu" x="336" y="160" width="132" height="44" rx="6"/>
+<text class="t" data-n="gpu" x="402" y="174">Graphics chip</text>
+<text class="s" data-n="gpu" x="402" y="191">removed</text>
+</svg>

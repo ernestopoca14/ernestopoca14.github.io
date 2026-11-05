@@ -19,15 +19,7 @@ Both run in **n8n**, a self-hosted automation tool, on my home server. Both post
 
 ## 🧩 How the weekly report works
 
-```mermaid
-flowchart LR
-  T[Sunday 09:00] --> K[Uptime Kuma metrics]
-  T --> P[Proxmox API]
-  T --> G[GitHub PRs]
-  T --> N[n8n API]
-  K & P & G & N --> B[Build report<br/>one Code node]
-  B --> TG[Telegram]
-```
+![Every Sunday the weekly report reads four sources, one code step builds the message, and it goes to Telegram](images/telegram-brief-n8n/pipeline-weekly.svg)
 
 - Each source is one HTTP request node.
 - One **Code node** turns everything into a short HTML message.

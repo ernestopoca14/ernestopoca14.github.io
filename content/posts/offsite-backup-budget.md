@@ -11,11 +11,7 @@ My databases and app settings already go off-site every night, encrypted. But my
 
 Cloud storage for ~250 GB costs money every month. A 1 TB USB drive costs once.
 
-```mermaid
-flowchart LR
-  S[(Server disk<br/>photos, backups, apps)] --> C[(Cloud storage<br/>every night, encrypted<br/>databases + app settings)]
-  S --> U[(USB drive<br/>once a month<br/>photos + server backups)]
-```
+![The server disk holds copy 1; databases go to encrypted cloud storage every night, photos and backups go to a USB drive once a month](images/offsite-backup-budget/copies-offsite.svg)
 
 ## 💽 The drive
 
