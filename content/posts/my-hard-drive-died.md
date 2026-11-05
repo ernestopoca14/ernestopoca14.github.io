@@ -40,9 +40,9 @@ None of that was a plan. **I had no second copy of anything**, and I got lucky.
 ```mermaid
 flowchart TD
   B[Boot] --> Q{Data disk OK?}
-  Q -->|yes| OK[All apps run]
-  Q -->|no, before| E[Emergency mode]
-  Q -->|no, with nofail| P[Boots, only its apps stop]
+  Q --> OK[Yes:<br/>all apps<br/>run]
+  Q --> E[No, before:<br/>emergency<br/>mode]
+  Q --> P[No, with nofail:<br/>boots, only<br/>its apps stop]
 ```
 
 - **Encrypted off-site backups** every night of every database, the password manager and app settings, plus [a full restore test](restored-a-backup).
