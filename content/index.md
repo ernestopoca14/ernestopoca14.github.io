@@ -13,6 +13,9 @@ I use this blog to document what I learn and how I progress in the topics I'm in
 
 📘 Learning page · 🛠️ Project log · 💡 Quick tip
 
+- 🛠️ 2026-11-04 · [My hard drive died: what I lost and what I changed](posts/my-hard-drive-died)
+- 🛠️ 2026-11-04 · [I restored a backup to prove it works](posts/restored-a-backup)
+- 🛠️ 2026-11-04 · [Off-site backup on a budget: a USB drive and a monthly script](posts/offsite-backup-budget)
 - 🛠️ 2026-11-04 · [A morning brief and weekly report in Telegram with n8n](posts/telegram-brief-n8n)
 - 🛠️ 2026-11-02 · [Microcord handles for my mini pliers](posts/microcord-pliers-handles)
 - 📘 2026-10-30 · [From Volts to Linux: how a computer works, from the ground up](posts/from-volts-to-linux)
