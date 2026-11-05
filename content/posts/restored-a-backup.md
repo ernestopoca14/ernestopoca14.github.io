@@ -17,10 +17,10 @@ A restored copy is a full clone. Started normally, it would read my email, send 
 
 ```mermaid
 flowchart LR
-  BK[(Backup)] -->|restore| C[Test copy]
-  C -.-x|unplugged| NET[Network]
-  C -.-x|removed| DATA[(Data disk)]
-  C -.-x|removed| GPU[Graphics chip]
+  BK[(Backup)] --> C[Test copy]
+  C -.-x NET[Network<br/>unplugged]
+  C -.-x DATA[(Data disk<br/>removed)]
+  C -.-x GPU[Graphics chip<br/>removed]
 ```
 
 ## 🛠️ What I did

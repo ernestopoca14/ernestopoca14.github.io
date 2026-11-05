@@ -13,8 +13,8 @@ Cloud storage for ~250 GB costs money every month. A 1 TB USB drive costs once.
 
 ```mermaid
 flowchart LR
-  S[(Server disk<br/>photos, backups, apps)] -->|every night, encrypted| C[(Cloud storage<br/>databases + app settings)]
-  S -->|once a month, script| U[(USB drive<br/>photos + server backups)]
+  S[(Server disk<br/>photos, backups, apps)] --> C[(Cloud storage<br/>every night, encrypted<br/>databases + app settings)]
+  S --> U[(USB drive<br/>once a month<br/>photos + server backups)]
 ```
 
 ## 💽 The drive
