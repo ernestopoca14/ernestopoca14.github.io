@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 268" width="480" height="268" role="img" aria-labelledby="decision-boot-t">
+<title id="decision-boot-t">At boot: if the data disk fails, the server used to stop; with nofail it keeps running</title>
+<style>svg{--card:#F7F2EA;--ink:#2E2B27;--muted:#6F6555;--line:#B9A98F;--edge:#6F6555;--accent:#944123;--accent-soft:rgba(148,65,35,.09);--good:#2F7D55;--good-soft:rgba(47,125,85,.10);--bad:#B3261E;--bad-soft:rgba(179,38,30,.08);--font:'Source Sans 3','Source Sans Pro','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}@media (prefers-color-scheme:dark){svg{--card:#13231A;--ink:#E3EFE6;--muted:#93A89A;--line:#3E5848;--edge:#93A89A;--accent:#29B3E3;--accent-soft:rgba(41,179,227,.12);--good:#4FC98A;--good-soft:rgba(79,201,138,.12);--bad:#FF6B5E;--bad-soft:rgba(255,107,94,.10);}}
+.bg{fill:var(--card);stroke:var(--line)}
+.n{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.focus{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.good{fill:var(--good-soft);stroke:var(--good);stroke-width:2}
+.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2}
+.dim{stroke-dasharray:3 3}
+.t{fill:var(--ink);font:500 14px var(--font);text-anchor:middle;dominant-baseline:central}
+.s{fill:var(--muted);font:400 12px var(--font);text-anchor:middle;dominant-baseline:central}
+.k{fill:var(--muted);font:600 10.5px var(--font);letter-spacing:.08em;text-anchor:middle;dominant-baseline:central}
+.e{fill:none;stroke:var(--edge);stroke-width:1.6}
+.cut{fill:none;stroke:var(--bad);stroke-width:1.6;stroke-dasharray:5 4}
+.x{stroke:var(--bad);stroke-width:2.2;stroke-linecap:round}
+.xb{fill:var(--card);stroke:var(--bad);stroke-width:1.5}
+.head{fill:var(--edge)}
+</style>
+<defs><marker id="decision-boot-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10z"/></marker></defs>
+<rect class="bg" x="0.5" y="0.5" width="479" height="267" rx="10"/>
+<path class="e" d="M240 46 L240 65" marker-end="url(#decision-boot-a)"/>
+<path class="e" d="M140 104 L84 104 L84 177" marker-end="url(#decision-boot-a)"/>
+<path class="e" d="M240 140 L240 177" marker-end="url(#decision-boot-a)"/>
+<path class="e" d="M340 104 L396 104 L396 177" marker-end="url(#decision-boot-a)"/>
+<rect class="n" data-n="boot" x="196" y="12" width="88" height="34" rx="17"/>
+<text class="t" data-n="boot" x="240" y="29">Boot</text>
+<polygon class="n" data-n="q" points="240,68 340,104 240,140 140,104"/>
+<text class="t" data-n="q" x="240" y="104">Data disk OK?</text>
+<rect class="n" data-n="yes" x="12" y="180" width="144" height="76" rx="6"/>
+<text class="k" data-n="yes" x="84" y="209">YES</text>
+<text class="t" data-n="yes" x="84" y="225.5">All apps run</text>
+<rect class="n bad" data-n="before" x="168" y="180" width="144" height="76" rx="6"/>
+<text class="k" data-n="before" x="240" y="201">NO · BEFORE</text>
+<text class="t" data-n="before" x="240" y="217.5">Emergency mode</text>
+<text class="s" data-n="before" x="240" y="234.5">whole server down</text>
+<rect class="n good" data-n="nofail" x="324" y="180" width="144" height="76" rx="6"/>
+<text class="k" data-n="nofail" x="396" y="201">NO · WITH NOFAIL</text>
+<text class="t" data-n="nofail" x="396" y="217.5">Server runs</text>
+<text class="s" data-n="nofail" x="396" y="234.5">only its apps stop</text>
+</svg>

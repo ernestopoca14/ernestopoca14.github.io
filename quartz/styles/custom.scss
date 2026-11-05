@@ -24,3 +24,10 @@ code.mermaid .nodeLabel,
 code.mermaid .edgeLabel {
   white-space: nowrap;
 }
+
+// Diagrams (draw-diagram skill): SVG with its own card, centered, never wider than 560px
+article img[src$=".svg"] {
+  display: block;
+  width: min(100%, 560px);
+  margin: 1.25rem auto;
+}

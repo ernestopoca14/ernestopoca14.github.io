@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 212" width="480" height="212" role="img" aria-labelledby="copies-offsite-t">
+<title id="copies-offsite-t">The server disk holds copy 1; databases go to encrypted cloud storage every night, photos and backups go to a USB drive once a month</title>
+<style>svg{--card:#F7F2EA;--ink:#2E2B27;--muted:#6F6555;--line:#B9A98F;--edge:#6F6555;--accent:#944123;--accent-soft:rgba(148,65,35,.09);--good:#2F7D55;--good-soft:rgba(47,125,85,.10);--bad:#B3261E;--bad-soft:rgba(179,38,30,.08);--font:'Source Sans 3','Source Sans Pro','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}@media (prefers-color-scheme:dark){svg{--card:#13231A;--ink:#E3EFE6;--muted:#93A89A;--line:#3E5848;--edge:#93A89A;--accent:#29B3E3;--accent-soft:rgba(41,179,227,.12);--good:#4FC98A;--good-soft:rgba(79,201,138,.12);--bad:#FF6B5E;--bad-soft:rgba(255,107,94,.10);}}
+.bg{fill:var(--card);stroke:var(--line)}
+.n{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.focus{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.good{fill:var(--good-soft);stroke:var(--good);stroke-width:2}
+.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2}
+.dim{stroke-dasharray:3 3}
+.t{fill:var(--ink);font:500 14px var(--font);text-anchor:middle;dominant-baseline:central}
+.s{fill:var(--muted);font:400 12px var(--font);text-anchor:middle;dominant-baseline:central}
+.k{fill:var(--muted);font:600 10.5px var(--font);letter-spacing:.08em;text-anchor:middle;dominant-baseline:central}
+.e{fill:none;stroke:var(--edge);stroke-width:1.6}
+.cut{fill:none;stroke:var(--bad);stroke-width:1.6;stroke-dasharray:5 4}
+.x{stroke:var(--bad);stroke-width:2.2;stroke-linecap:round}
+.xb{fill:var(--card);stroke:var(--bad);stroke-width:1.5}
+.head{fill:var(--edge)}
+</style>
+<defs><marker id="copies-offsite-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10z"/></marker></defs>
+<rect class="bg" x="0.5" y="0.5" width="479" height="211" rx="10"/>
+<path class="e" d="M152 106 L212 106 L212 50 L267 50" marker-end="url(#copies-offsite-a)"/>
+<path class="e" d="M152 106 L212 106 L212 162 L267 162" marker-end="url(#copies-offsite-a)"/>
+<rect class="n" data-n="tag0" x="181.9" y="15" width="60.2" height="22" rx="11"/><text class="s" data-n="tag0" x="212" y="26">nightly</text>
+<rect class="n" data-n="tag1" x="181.9" y="175" width="60.2" height="22" rx="11"/><text class="s" data-n="tag1" x="212" y="186">monthly</text>
+<path class="n" data-n="server" d="M12 76 a70 8 0 0 0 140 0 a70 8 0 0 0 -140 0 v60 a70 8 0 0 0 140 0 v-60"/>
+<text class="k" data-n="server" x="82" y="97">COPY 1</text>
+<text class="t" data-n="server" x="82" y="113.5">Server disk</text>
+<text class="s" data-n="server" x="82" y="130.5">photos, backups, apps</text>
+<path class="n" data-n="cloud" d="M270 20 a99 8 0 0 0 198 0 a99 8 0 0 0 -198 0 v60 a99 8 0 0 0 198 0 v-60"/>
+<text class="k" data-n="cloud" x="369" y="41">COPY 2 · ENCRYPTED</text>
+<text class="t" data-n="cloud" x="369" y="57.5">Cloud storage</text>
+<text class="s" data-n="cloud" x="369" y="74.5">databases + app settings</text>
+<path class="n focus" data-n="usb" d="M270 132 a99 8 0 0 0 198 0 a99 8 0 0 0 -198 0 v60 a99 8 0 0 0 198 0 v-60"/>
+<text class="k" data-n="usb" x="369" y="153">COPY 3 · OFF THE SERVER</text>
+<text class="t" data-n="usb" x="369" y="169.5">USB drive</text>
+<text class="s" data-n="usb" x="369" y="186.5">photos + server backups</text>
+</svg>

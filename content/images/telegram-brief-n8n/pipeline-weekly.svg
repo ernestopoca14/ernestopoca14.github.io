@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" width="480" height="240" role="img" aria-labelledby="pipeline-weekly-t">
+<title id="pipeline-weekly-t">Every Sunday the weekly report reads four sources, one code step builds the message, and it goes to Telegram</title>
+<style>svg{--card:#F7F2EA;--ink:#2E2B27;--muted:#6F6555;--line:#B9A98F;--edge:#6F6555;--accent:#944123;--accent-soft:rgba(148,65,35,.09);--good:#2F7D55;--good-soft:rgba(47,125,85,.10);--bad:#B3261E;--bad-soft:rgba(179,38,30,.08);--font:'Source Sans 3','Source Sans Pro','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;}@media (prefers-color-scheme:dark){svg{--card:#13231A;--ink:#E3EFE6;--muted:#93A89A;--line:#3E5848;--edge:#93A89A;--accent:#29B3E3;--accent-soft:rgba(41,179,227,.12);--good:#4FC98A;--good-soft:rgba(79,201,138,.12);--bad:#FF6B5E;--bad-soft:rgba(255,107,94,.10);}}
+.bg{fill:var(--card);stroke:var(--line)}
+.n{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.focus{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.good{fill:var(--good-soft);stroke:var(--good);stroke-width:2}
+.bad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:2}
+.dim{stroke-dasharray:3 3}
+.t{fill:var(--ink);font:500 14px var(--font);text-anchor:middle;dominant-baseline:central}
+.s{fill:var(--muted);font:400 12px var(--font);text-anchor:middle;dominant-baseline:central}
+.k{fill:var(--muted);font:600 10.5px var(--font);letter-spacing:.08em;text-anchor:middle;dominant-baseline:central}
+.e{fill:none;stroke:var(--edge);stroke-width:1.6}
+.cut{fill:none;stroke:var(--bad);stroke-width:1.6;stroke-dasharray:5 4}
+.x{stroke:var(--bad);stroke-width:2.2;stroke-linecap:round}
+.xb{fill:var(--card);stroke:var(--bad);stroke-width:1.5}
+.head{fill:var(--edge)}
+</style>
+<defs><marker id="pipeline-weekly-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0 0 L10 5 L0 10z"/></marker></defs>
+<rect class="bg" x="0.5" y="0.5" width="479" height="239" rx="10"/>
+<path class="e" d="M96 120 L112 120 L112 30 L125 30" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M96 120 L112 120 L112 90 L125 90" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M96 120 L112 120 L112 150 L125 150" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M96 120 L112 120 L112 210 L125 210" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M244 30 L264 30 L264 120 L281 120" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M244 90 L264 90 L264 120 L281 120" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M244 150 L264 150 L264 120 L281 120" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M244 210 L264 210 L264 120 L281 120" marker-end="url(#pipeline-weekly-a)"/>
+<path class="e" d="M384 120 L397 120" marker-end="url(#pipeline-weekly-a)"/>
+<rect class="n" data-n="sun" x="8" y="103" width="88" height="34" rx="17"/>
+<text class="t" data-n="sun" x="52" y="120">Sunday</text>
+<rect class="n" data-n="kuma" x="128" y="12" width="116" height="36" rx="6"/>
+<text class="t" data-n="kuma" x="186" y="30">Uptime Kuma</text>
+<rect class="n" data-n="pve" x="128" y="72" width="116" height="36" rx="6"/>
+<text class="t" data-n="pve" x="186" y="90">Proxmox</text>
+<rect class="n" data-n="gh" x="128" y="132" width="116" height="36" rx="6"/>
+<text class="t" data-n="gh" x="186" y="150">GitHub PRs</text>
+<rect class="n" data-n="n8n" x="128" y="192" width="116" height="36" rx="6"/>
+<text class="t" data-n="n8n" x="186" y="210">n8n</text>
+<rect class="n focus" data-n="build" x="284" y="94" width="100" height="52" rx="6"/>
+<text class="t" data-n="build" x="334" y="112">Build report</text>
+<text class="s" data-n="build" x="334" y="129">one code step</text>
+<rect class="n" data-n="tg" x="400" y="102" width="74" height="36" rx="6"/>
+<text class="t" data-n="tg" x="437" y="120">Telegram</text>
+</svg>
