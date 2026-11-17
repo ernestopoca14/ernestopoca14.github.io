@@ -13,6 +13,7 @@ I use this blog to document what I learn and how I progress in the topics I'm in
 
 📘 Learning page · 🛠️ Project log · 💡 Quick tip
 
+- 💡 2026-11-16 · [A network card that froze my whole server](posts/network-card-froze-server)
 - 🛠️ 2026-11-04 · [My hard drive died: what I lost and what I changed](posts/my-hard-drive-died)
 - 🛠️ 2026-11-04 · [I restored a backup to prove it works](posts/restored-a-backup)
 - 🛠️ 2026-11-04 · [Off-site backup on a budget: a USB drive and a monthly script](posts/offsite-backup-budget)

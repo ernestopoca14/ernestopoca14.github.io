@@ -37,5 +37,6 @@ Nothing yet.
 
 - [Automation](tags/homelab/automation)
 - [Backups](tags/homelab/backups)
+- [Networking](tags/homelab/networking)
 
 [All Homelab posts](tags/homelab)
