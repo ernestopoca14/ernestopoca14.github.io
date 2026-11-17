@@ -20,7 +20,9 @@ Posts grouped by area and topic. A post can sit in more than one topic. To see e
 
 ## 🔒 Security
 
-Nothing yet.
+- [Hardening](tags/security/hardening)
+
+[All Security posts](tags/security)
 
 ## ⚙️ Engineering & Making
 
