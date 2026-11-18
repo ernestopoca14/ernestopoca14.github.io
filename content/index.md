@@ -13,6 +13,8 @@ I use this blog to document what I learn and how I progress in the topics I'm in
 
 📘 Learning page · 🛠️ Project log · 💡 Quick tip
 
+- 🛠️ 2026-11-17 · [Troubleshooting my Home Assistant: blinking lights and a missing diffuser](posts/troubleshooting-home-assistant)
+- 🛠️ 2026-11-17 · [My bedroom on Home Assistant: lights, humidifier and phone widgets](posts/bedroom-home-assistant)
 - 📘 2026-11-17 · [Networking end to end, summarized](posts/networking-end-to-end)
 - 📘 2026-11-17 · [Securing my homelab in a week](posts/securing-homelab-week)
 - 💡 2026-11-16 · [A network card that froze my whole server](posts/network-card-froze-server)
