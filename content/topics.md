@@ -15,6 +15,7 @@ Posts grouped by area and topic. A post can sit in more than one topic. To see e
 
 - [Linux](tags/computing/linux)
 - [Computer Science](tags/computing/computer-science)
+- [Networking](tags/computing/networking)
 
 [All Computing posts](tags/computing)
 
