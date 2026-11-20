@@ -27,6 +27,7 @@ Posts grouped by area and topic. A post can sit in more than one topic. To see e
 
 ## ⚙️ Engineering & Making
 
+- [CAD](tags/engineering/cad)
 - [Electronics](tags/engineering/electronics)
 - [Making](tags/engineering/making)
 
