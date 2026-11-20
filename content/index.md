@@ -13,6 +13,8 @@ I use this blog to document what I learn and how I progress in the topics I'm in
 
 📘 Learning page · 🛠️ Project log · 💡 Quick tip
 
+- 🛠️ 2026-11-19 · [My iPad as a second monitor, on a 3D printed stand](posts/ipad-second-monitor-stand)
+- 🛠️ 2026-11-19 · [Three AI-driven CAD tools and two slicers, one calibration card](posts/fit-card-calibration)
 - 🛠️ 2026-11-17 · [Troubleshooting my Home Assistant: blinking lights and a missing diffuser](posts/troubleshooting-home-assistant)
 - 🛠️ 2026-11-17 · [My bedroom on Home Assistant: lights, humidifier and phone widgets](posts/bedroom-home-assistant)
 - 📘 2026-11-17 · [Networking end to end, summarized](posts/networking-end-to-end)
