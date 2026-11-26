@@ -5,7 +5,7 @@ tags: [type/project, computing/linux]
 description: How I put CachyOS next to Windows 11 on an MSI GF65 without breaking Windows, and what each step taught me about how a PC starts.
 ---
 
-I've used Windows my whole life. I tried Linux once, but my NVIDIA card gave me trouble in games, so I went back. Now every server in my homelab runs Linux, and I'm interested in a  cybersecurity/software career, where Linux is the fundamental. Time to stop using it only over SSH and have it as a daily driver.
+I've used Windows my whole life. I tried Linux once, but my NVIDIA card gave me trouble in games, so I went back. Now every server in my homelab runs Linux, and I'm interested in a cybersecurity/software career, where Linux is the fundamental. Time to stop using it only over SSH and have it as a daily driver.
 
 This is how I installed **CachyOS** next to Windows 11 on my gaming laptop without touching Windows, and what I learned along the way.
 
@@ -96,7 +96,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 
 ## 🎮 Gaming
 
-**Fistful of Frags** and **Halo: The Master Chief Collection** both run fine through Steam and Proton, the NVIDIA problem from my last attempt is gone. The desktop runs on the Intel graphics, and games use the NVIDIA card through `prime-run`.
+**Fistful of Frags** and **Halo: The Master Chief Collection** both run fine through Steam and Proton; the NVIDIA problem from my last attempt is gone. The desktop runs on the Intel graphics, and games use the NVIDIA card through `prime-run`.
 
 ![Halo: The Master Chief Collection main menu](images/dual-boot-cachyos/halo-mcc.jpg)
 *Halo MCC through Proton.*

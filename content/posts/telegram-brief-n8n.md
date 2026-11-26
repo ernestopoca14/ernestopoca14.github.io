@@ -35,7 +35,7 @@ Both run in **n8n**, a self-hosted automation tool, on my home server. Both post
 - **Sky**: moon phase, planets in the evening, meteor showers.
 - **My day**: calendar events, today's tasks from my notes, spending this month.
 
-No pollen: no free source covers Costa Rica, hopefully this changes in the future.
+No pollen: no free source covers Costa Rica; hopefully this changes in the future.
 
 ![The morning brief in Telegram, with made-up data](images/telegram-brief-n8n/morning-brief-example.png)
 *An example morning brief. The events, tasks and amounts are made up.*
