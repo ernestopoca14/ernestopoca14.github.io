@@ -21,11 +21,11 @@ Finished mini pliers with the handles.
 
 ## 🤔 Why
 
-Two reasons: **grip and looks.** Bare metal handles are slippery and cold. Cord gives my fingers something to hold, and now each pliers has its own color, so I can tell them apart in the bag. 
+Two reasons: **grip and looks.** Bare metal handles are slippery and cold. Cord gives my fingers something to hold, and now each pliers has its own color, so I can tell them apart in the bag.
 
 ## 🪢 How I wrapped them
 
-I think the method is called whipping: you lay a loop of cord along the handle, wrap tight turns over it, then pull the end back under the turns so it locks itself. No glue, no knot that sticks out. 
+I think the method is called whipping: you lay a loop of cord along the handle, wrap tight turns over it, then pull the end back under the turns so it locks itself. No glue, no knot that sticks out.
 
 ### 🟠 The flat-nose pliers (orange)
 
