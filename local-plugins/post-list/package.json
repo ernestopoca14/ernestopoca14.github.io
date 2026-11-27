@@ -1,0 +1,24 @@
+{
+  "name": "post-list",
+  "private": true,
+  "description": "Home page posts list with gallery, table and board views",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js"
+  },
+  "quartz": {
+    "name": "post-list",
+    "displayName": "Post list",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "components": {
+      "PostList": {
+        "displayName": "Post list",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 5
+      }
+    }
+  }
+}

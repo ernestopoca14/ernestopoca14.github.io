@@ -1,0 +1,24 @@
+{
+  "name": "site-shell",
+  "private": true,
+  "description": "Sidebar nav, topics list, sidebar toggle and the Workspace | Notebook style switch",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js"
+  },
+  "quartz": {
+    "name": "site-shell",
+    "displayName": "Site shell",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "components": {
+      "SiteShell": {
+        "displayName": "Site shell",
+        "defaultPosition": "left",
+        "defaultPriority": 15
+      }
+    }
+  }
+}

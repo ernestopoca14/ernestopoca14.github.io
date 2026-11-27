@@ -1,0 +1,24 @@
+{
+  "name": "page-cover",
+  "private": true,
+  "description": "Cover band and icon drawn from the topic of the page",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js"
+  },
+  "quartz": {
+    "name": "page-cover",
+    "displayName": "Page cover",
+    "category": "component",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "components": {
+      "PageCover": {
+        "displayName": "Page cover",
+        "defaultPosition": "beforeBody",
+        "defaultPriority": 7
+      }
+    }
+  }
+}
