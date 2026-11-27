@@ -5,17 +5,17 @@ tags: [type/project, engineering/making, engineering/cad, computing/linux]
 description: "From idea to second screen in one evening: a stand designed in code, sliced from the command line, printed in 1 h 22 min, and an old iPad working as a monitor for my Linux laptop."
 ---
 
-## ⚡ In short
+## In short
 
 - **Why:** my iPad 8th gen sat in a drawer, and I was thinking about buying a second monitor. I reused the tablet instead.
 - **The path:** idea → CAD in code → G-code → print → the iPad as a screen over VNC.
 - **Result:** a one-piece PETG stand (1 h 22 min, 29.5 g) that fits well, and a one-click second screen.
 
-## 💡 1. The idea
+## 1. The idea
 
 No case, a fixed angle, little plastic, one piece, no supports. The size that matters is the iPad's thickness, **7.5 mm**. My [calibration card](posts/fit-card-calibration) says a free fit needs **+0.3 mm per side**, so the slot is **8.1 mm**.
 
-## 📐 2. CAD: the part is code
+## 2. CAD: the part is code
 
 The part is a Python script in a code-based CAD tool, written and edited through my AI-assisted workflow. Round 1 was built from straight bars and plates, and I didn't like it. So the rule became **everything rounded**, and round 2 gave three ideas:
 
@@ -29,20 +29,20 @@ I picked the **ribbon**: one 4 mm band, 40 mm wide, bent into a lip, a backrest 
 ![Side view of the ribbon profile: lip, slot, backrest and rear foot](images/ipad-second-monitor-stand/ribbon_side.png)
 *The approved profile, from the side.*
 
-## 🧾 3. G-code from the command line
+## 3. G-code from the command line
 
 PrusaSlicer for the MINI+ and PETG: 0.2 mm layers, 4 walls, 15 % infill, 240 °C / 85 °C, no supports. The part **prints on its side**, so the layers follow the curve and the bends stay strong.
 
 The first run failed with "All objects are outside of the print volume". `--center 90,90 --ensure-on-bed` puts it in the middle of the bed and on the plate. Then I checked the G-code: the right printer, bed probing, temperatures.
 
-## 🖨️ 4. The print
+## 4. The print
 
 1 h 22 min on the first try, and the iPad fits really well. Next time I'd add a soft pad underneath so it doesn't slide.
 
 ![The printed ribbon stand on a table](images/ipad-second-monitor-stand/stand-printed.jpg)
 *One band of black PETG.*
 
-## 🖥️ 5. The iPad as a second monitor
+## 5. The iPad as a second monitor
 
 KDE Plasma 6 (Wayland) comes with `krfb-virtualmonitor`. It creates a **virtual screen** that Plasma treats like a real monitor and shares it over **VNC**. The iPad only needs a VNC viewer app.
 
@@ -67,7 +67,7 @@ sudo ufw allow from 192.168.1.0/24 to any port 5900 proto tcp
 
 Now it's a small script with a launcher entry, **iPad screen**: one click on, one click off.
 
-## 🧠 Lessons
+## Lessons
 
 1. **Measure your printer first:** the slot was right on the first print.
 2. **Say what you don't like:** "too many straight lines" turned brackets into a ribbon.

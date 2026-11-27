@@ -5,19 +5,19 @@ tags: [type/project, homelab/backups]
 description: How I restored my main server container from last night's backup, cut off from the network so the copy couldn't touch anything real, and what matched.
 ---
 
-## 🤔 Why
+## Why
 
 > A backup only counts once you've restored from it.
 
 Every night, Proxmox backs up every guest on my home server. The most important one is a single container that runs almost all my apps, including my password manager. The backups said `OK` every night, but I had never restored one. After [my hard drive died](my-hard-drive-died), I didn't want to find out on a bad day that "OK" meant nothing.
 
-## ⚠️ The catch
+## The catch
 
 A restored copy is a full clone. Started normally, it would read my email, send messages as if it were the real server, and write to the same data disk. So the copy had to start **cut off** from everything.
 
 ![The backup is restored into a test copy, which is cut off from the network, the data disk and the graphics chip](images/restored-a-backup/isolation-restore.svg)
 
-## 🛠️ What I did
+## What I did
 
 On the Proxmox host (`$DUMP` is the backup folder, `$CT` the container's ID):
 
@@ -36,7 +36,7 @@ pct start 900
 
 Then I compared **counts** between the real container and the copy: password items, expense rows, automations. Never the data itself.
 
-## 📊 The result
+## The result
 
 - The backup restored in **6.5 minutes**, and every app came up within 3 more.
 - The counts matched, except for what happened after the backup ran: one expense and one automation added that morning.
@@ -46,7 +46,7 @@ Then I deleted the copy: `pct stop 900 && pct destroy 900 --purge`.
 
 **Verdict:** the backup works. Getting this container back takes about 10 minutes.
 
-## 🧠 Lessons
+## Lessons
 
 - Test the restore, not only the backup job.
 - Cut the copy off first. A clone of your server is still your server.

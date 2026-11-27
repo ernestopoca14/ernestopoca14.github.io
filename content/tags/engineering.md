@@ -1,5 +1,5 @@
 ---
-title: "⚙️ Engineering & Making"
+title: " Engineering & Making"
 date: 2026-10-31
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "💻 Computing"
+title: " Computing"
 date: 2026-10-31
 ---
 

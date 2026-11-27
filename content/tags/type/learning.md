@@ -1,5 +1,5 @@
 ---
-title: "📘 Learning pages"
+title: " Learning pages"
 date: 2026-10-31
 ---
 

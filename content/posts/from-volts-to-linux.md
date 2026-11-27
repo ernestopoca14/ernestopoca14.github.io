@@ -91,8 +91,8 @@ Hundreds of programs share one CPU, one RAM and one SSD. The kernel makes that w
 > [!example] Try it on Linux
 > `strace -c ls` counts the system calls `ls` makes. `echo -n "Hi" | xxd -b` shows the bits of "H" and "i".
 
-## 🧪 How I studied it
+## How I studied it
 
 With my own AI-assisted study workflow, I turned my notes into an **interactive page**: flip bits, wire gates, step a tiny CPU, watch the boot chain, with self-check questions per layer. Then I tried each layer on my own machine with real commands.
 
-👉 **[Open the interactive "From Volts to Linux" page](/static/learn/from-volts-to-linux.html)**
+**[Open the interactive "From Volts to Linux" page](/static/learn/from-volts-to-linux.html)**

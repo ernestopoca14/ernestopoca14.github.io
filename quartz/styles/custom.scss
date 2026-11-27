@@ -712,10 +712,8 @@ article {
   }
 }
 
-// The home page shows the posts list instead of the hand-written "Latest posts" list.
+// The home page shows the posts list (local-plugins/post-list) under the intro.
 body[data-slug="index"] {
-  article > #latest-posts,
-  article > #latest-posts ~ *,
   .center > hr {
     display: none;
   }

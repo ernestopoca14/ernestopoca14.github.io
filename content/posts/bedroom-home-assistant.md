@@ -5,7 +5,7 @@ tags: [type/project, homelab/automation]
 description: "How I moved my cheap Wi-Fi bulbs and humidifier off the cloud app, made them answer in under a second, and set the room to go warm at 6 and dim through the night."
 ---
 
-## ⚡ In short
+## In short
 
 - **What:** 2 ceiling bulbs, a bedside lamp and a humidifier, all cheap Wi-Fi devices, controlled from Home Assistant instead of the vendor's cloud app.
 - **Result:** the lights answer in about **0.3 s**, keep working without internet, and follow the time of day: warm at 18:00, 60 % at 20:00, 40 % at 21:00, 20 % from 22:00.
@@ -14,7 +14,7 @@ description: "How I moved my cheap Wi-Fi bulbs and humidifier off the cloud app,
 
 **Why I did it:** I wanted to get involved with the open home community and Home Assistant, and to build automations that make my day-to-day a bit better.
 
-## 🧩 What's in the room
+## What's in the room
 
 | Device | What it does | How Home Assistant talks to it |
 |---|---|---|
@@ -24,7 +24,7 @@ description: "How I moved my cheap Wi-Fi bulbs and humidifier off the cloud app,
 
 All four are rebranded Tuya devices. (A third ceiling bulb lost its pairing and won't reset; that one is for another day.) Out of the box they only work through the vendor's app and its cloud: every tap goes to a server abroad and back.
 
-## 🔌 Step 1: getting the bulbs off the cloud
+## Step 1: getting the bulbs off the cloud
 
 My first setup used an integration called **LocalTuya**. It talks to each device directly, using the device's address and a secret "local key". In practice:
 
@@ -39,7 +39,7 @@ I moved the bulbs to **Tuya Local**, a newer integration that ships ready-made p
 
 To get the local keys, I made a free account on Tuya's developer website, which lists the key for each of my devices.
 
-## 🎨 Step 2: one button per colour
+## Step 2: one button per colour
 
 Instead of picking colours in a colour wheel, I made **14 small scripts**: Warm, White, and a set of colours, for the ceiling and for the lamp. Each one is a single "turn on with this colour" call.
 
@@ -47,7 +47,7 @@ The trick that took a while: the bulbs keep **one brightness per mode** (white o
 
 - Warm = **2700 K**, picked by eye. White = 6000 K.
 
-## 💨 Step 3: the humidifier
+## Step 3: the humidifier
 
 The diffuser got its own buttons and two automations:
 
@@ -59,7 +59,7 @@ The diffuser got its own buttons and two automations:
 ![A round wood-look aroma diffuser letting out a thin line of mist, next to a bedside lamp with a glass base, glowing warm](images/bedroom-home-assistant/diffuser.jpg)
 *The diffuser on my bedside table, running next to the lamp in Warm.*
 
-## 📱 Step 4: everything on my phone
+## Step 4: everything on my phone
 
 With the lights and the diffuser both in Home Assistant, they come together in one place:
 
@@ -80,7 +80,7 @@ The buttons I use most: the diffuser for **1 hour** or **3 hours**, and **On/Off
 
 **Speed:** from the script to both ceiling lights on takes **0.3 s** inside Home Assistant. From the phone it's fastest on home Wi-Fi: the app uses the local address at home, and the remote one adds 0.3–0.6 s.
 
-## 🌙 Step 5: the room follows the evening
+## Step 5: the room follows the evening
 
 One automation now handles the whole evening, from 18:00 to 06:00:
 
@@ -96,7 +96,7 @@ Two rules made it feel right:
 - It only touches lights that are **on**. It never turns a light on by itself.
 - A light I switch on later in the evening gets the same treatment, not just the ones that were on at 18:00.
 
-## 💡 What I learned
+## What I learned
 
 - **Run the devices locally first.** Most "my smart lights are flaky" problems were addresses and keys, not hardware.
 - **Keep the old names** when you swap an integration, and everything built on top keeps working.

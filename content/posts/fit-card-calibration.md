@@ -5,14 +5,14 @@ tags: [type/project, engineering/making, engineering/cad]
 description: "I printed one fit-test card to learn how my Prusa MINI+ really prints holes, nuts and pins, and used it to compare three CAD tools and two slicers."
 ---
 
-## ⚡ In short
+## In short
 
 - **What:** one 100 × 62 × 4 mm card that tests screw holes, nut traps, heat-set insert holes, pin fits and thin walls, three sizes each.
 - **Why:** a hole drawn at 3.0 mm doesn't print at 3.0 mm. I wanted my own fit rules for my printer.
 - **Bonus:** I built the same card in three CAD tools and sliced it in two slicers, to pick my default tools.
 - **Result:** round holes print 0.1–0.4 mm small, hexes print exact. My rules are in the table below.
 
-## 🛠️ Three CAD tools
+## Three CAD tools
 
 | | text-to-CAD | FreeCAD + MCP | SolidCraft |
 |---|---|---|---|
@@ -28,20 +28,20 @@ All three agree within 0.1 % on volume. FreeCAD's first card had zero volume (th
 
 **My pick:** text-to-CAD. The part is plain code I can read, change and keep in git, and it checks itself. I'll keep trying the others and new tools as they come out.
 
-## 🔪 Two slicers
+## Two slicers
 
 OrcaSlicer and PrusaSlicer gave the same slice for my Prusa MINI+ (PETG, 0.2 mm layers): 1 h 05 min vs 58 min, the difference being one extra wall.
 
 **What broke:** my first PrusaSlicer run from the command line silently fell back to a generic 200 mm printer with no bed probing. Now a small script builds the full MINI profile and refuses any bed that isn't 180 × 180 mm. **Before printing a file you didn't slice by hand, open the G-code and check it.**
 
-## 🖨️ The print
+## The print
 
 One hour of printing. A first-layer Live Z of -1.500 gave an even first layer. My PETG was wet, so it strung a lot, and the 3.2 mm labels came out unreadable.
 
 ![The printed card with two heat-set inserts pressed in, an M3 nut, an M3 bolt and the printed pin beside it](images/fit-card-calibration/fit-card-parts.jpg)
 *The card after testing: two inserts set, and the parts I checked against it.*
 
-## 📏 What fits
+## What fits
 
 | Test | Result | My rule |
 |---|---|---|
@@ -52,7 +52,7 @@ One hour of printing. A first-layer Live Z of -1.500 gave an even first layer. M
 
 The caliper explained why: round holes 3.0 / 3.2 / 3.4 printed at 2.6 / 2.9 / 3.1, while the hexes came out exact. A slicer draws a circle as short straight lines and the plastic bulges inward on the curve, so small holes lose the most. That's also why a 4.0 mm insert hole works: it prints at about 3.7 mm, the insert's smooth part.
 
-## 🧠 Lessons
+## Lessons
 
 1. **Print a fit card once per printer and filament.** One hour gave me rules for screws, nuts, inserts and pins.
 2. **Holes shrink, flats don't.** Add about 0.4 mm to small round holes, nothing to hexes.

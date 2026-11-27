@@ -11,7 +11,7 @@ This is how I installed **CachyOS** next to Windows 11 on my gaming laptop witho
 
 ![The MSI laptop running CachyOS with KDE Plasma](images/dual-boot-cachyos/desktop.jpg)
 
-## 💻 The laptop
+## The laptop
 
 | Part       | What                                  |
 | ---------- | ------------------------------------- |
@@ -20,7 +20,7 @@ This is how I installed **CachyOS** next to Windows 11 on my gaming laptop witho
 | GPU        | NVIDIA GTX 1660 Ti, 6 GB              |
 | RAM / disk | 16 GB / 512 GB NVMe SSD               |
 
-## 🤔 Why CachyOS
+## Why CachyOS
 
 I compared Mint, Bazzite, Fedora, Debian, Lubuntu and plain Arch. CachyOS won because:
 
@@ -30,7 +30,7 @@ I compared Mint, Bazzite, Fedora, Debian, Lubuntu and plain Arch. CachyOS won be
 
 I tried KDE, Cinnamon, Xfce and COSMIC in a virtual machine first and picked **KDE Plasma**: familiar coming from Windows, with the best Wayland and gaming support.
 
-## 🛠️ The install in 4 steps
+## The install in 4 steps
 
 **0. Back up.** I copied my Windows home folder to my home server and checked the copy before touching the disk.
 
@@ -65,7 +65,7 @@ The surprise: the installer wants an EFI partition of at least 512 MiB, and Wind
 ![The GRUB menu with CachyOS, Windows and a snapshots entry](images/dual-boot-cachyos/grub-menu.jpg)
 *CachyOS, Windows (found by `os-prober`) and the snapshots entry at the bottom.*
 
-## 🧱 How it starts now
+## How it starts now
 
 Each step loads the next program into RAM and jumps to it:
 
@@ -85,7 +85,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 ![fastfetch and systemd-analyze in the terminal](images/dual-boot-cachyos/systemd-analyze.png)
 *A normal boot: 4.7 s in firmware, 21 s from power to desktop.*
 
-## 🔧 Setting it up
+## Setting it up
 
 - **Tailscale** to reach my homelab from anywhere.
 - A **new SSH key** just for Linux. `ssh-copy-id` failed with `Permission denied (publickey)`: my server refuses passwords, so the tool couldn't log in to add the key. That's the security working. I added it through the server's web console.
@@ -94,7 +94,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 - **Obsidian**: my notes are back, synced with git like on Windows.
 - **My AI coding assistant** runs here now, same setup as on Windows (I'm still considering switching in the future to local models or another provider for frontier AI capabilities).
 
-## 🎮 Gaming
+## Gaming
 
 **Fistful of Frags** and **Halo: The Master Chief Collection** both run fine through Steam and Proton; the NVIDIA problem from my last attempt is gone. The desktop runs on the Intel graphics, and games use the NVIDIA card through `prime-run`.
 
@@ -104,7 +104,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 ![Fistful of Frags in game](images/dual-boot-cachyos/fistful-of-frags.jpg)
 *Fistful of Frags.*
 
-## 🩺 Health check after the first days
+## Health check after the first days
 
 | Check | Result |
 |---|---|
@@ -118,7 +118,7 @@ My first boot sat **3 min 33 s in the firmware** (`systemd-analyze`). It was a o
 > [!tip] Snapshots aren't backups
 > They live on the same disk. A dead SSD takes them along. A real backup lives on another device.
 
-## 🧠 What I learned
+## What I learned
 
 **Partitioning a disk.** A disk is a table of partitions, each with its own filesystem. You can shrink one to make room without losing data, but back up first, never let an installer "Erase disk", and read the summary: it's the last moment nothing has happened yet.
 

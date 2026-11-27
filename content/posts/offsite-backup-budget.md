@@ -5,7 +5,7 @@ tags: [type/project, homelab/backups, computing/linux]
 description: My photos and server backups lived on one disk; a 1 TB USB drive and a small rsync script give me a second copy that leaves the server.
 ---
 
-## 🕳️ The gap
+## The gap
 
 My databases and app settings already go off-site every night, encrypted. But my photos (~54 GB) and the nightly backups of the whole server (~193 GB) lived on **one disk**. One dead disk would take the data *and* its backup. That breaks the **3-2-1 rule**: 3 copies, on 2 different media, 1 somewhere else.
 
@@ -13,11 +13,11 @@ Cloud storage for ~250 GB costs money every month. A 1 TB USB drive costs once.
 
 ![The server disk holds copy 1; databases go to encrypted cloud storage every night, photos and backups go to a USB drive once a month](images/offsite-backup-budget/copies-offsite.svg)
 
-## 💽 The drive
+## The drive
 
 A plain portable hard drive, formatted **NTFS**. If the server is dead, I can plug it into *any* PC and see my photos. My private documents go on it **encrypted**; photos and server backups go as plain files.
 
-## 🔁 The monthly script
+## The monthly script
 
 Once a month I plug the drive in and run `usb-offsite.sh` as a background service, so a dropped SSH session doesn't stop it:
 
@@ -36,7 +36,7 @@ What it does:
 
 The first copy, about 84 GB, took 29 minutes.
 
-## 🧠 Lessons
+## Lessons
 
 - "Off-site" starts with "off the server". A second disk in a drawer is already a big step up from zero.
 - No `--delete` on a backup copy. Sync is not backup.

@@ -5,13 +5,13 @@ tags: [type/learning, security/hardening, homelab/networking]
 description: "Six days of closing doors on my home server: SSH keys only, a host firewall, a locked-down password manager, rotated secrets, and a leak scan on every pull request."
 ---
 
-## 🤔 Why
+## Why
 
 After [my hard drive died](my-hard-drive-died), I started looking at the whole server with fresh eyes. I'm also working toward a cybersecurity career, so my own homelab is the best place to practice. If I want to defend other people's systems one day, I should start by attacking and fixing my own.
 
 The plan: look at the server the way an attacker would, write down every weak spot, and fix them one at a time, **testing each fix**. This is what one week (2026-10-17 → 10-22) looked like.
 
-## 🗺️ The checklist
+## The checklist
 
 | Layer | Weak spot I found | Fix |
 |---|---|---|
@@ -24,13 +24,13 @@ The plan: look at the server the way an attacker would, write down every weak sp
 | Code | Nothing stopped me from committing a secret | gitleaks scan on every PR |
 | Smart home | No 2FA; device keys in a text file | 2FA on; keys moved into the password manager |
 
-## 🔑 1. SSH: keys only
+## 1. SSH: keys only
 
 Password logins over SSH are what bots try all day. I turned them off on the host and every container, so only my SSH keys work.
 
 The test that matters is the negative one: I tried a password login and checked that the host **refused** it.
 
-## 🧱 2. A firewall on the host, with a dead-man switch
+## 2. A firewall on the host, with a dead-man switch
 
 Proxmox has a built-in firewall. I set it to **drop everything**, then allowed only what I need, and only from my home network: SSH, the web UI, the console and ping. I also turned off a service I don't use (`rpcbind`, only needed for NFS shares).
 
@@ -50,14 +50,14 @@ It earned its keep right away: on the **first try the timer switched the firewal
 
 From outside, ShieldsUP showed all common ports as *Stealth*, and Shodan had no record of my IP.
 
-## 🔐 3. The password manager
+## 3. The password manager
 
 I run Vaultwarden (a self-hosted Bitwarden server). Two surprises:
 
 - **Public sign-ups were on.** Anyone who found the page could make an account. I turned sign-ups and invitations off and deleted an old, empty account of mine.
 - **The admin token was stored in plain text** in its config file. I replaced it with a new one stored as an **Argon2id hash**, so the file alone isn't enough to get in. I tested it: the new token works, a wrong one gets rejected. Then I shredded the old file and its backup.
 
-## 🔄 4. Rotating secrets
+## 4. Rotating secrets
 
 A scan of my repo's **whole git history** found one old commit with passwords in a config file, and a VPN key.
 
@@ -67,18 +67,18 @@ A scan of my repo's **whole git history** found one old commit with passwords in
 
 I didn't rewrite the git history. The secrets in it are all rotated now, so the old values are useless.
 
-## 🕵️ 5. A leak scan on every PR
+## 5. A leak scan on every PR
 
 The best fix is to stop the next leak. Every pull request in my homelab repo now runs **gitleaks**, a tool that scans changes for passwords, keys and tokens. I added one custom rule for plain passwords in config files.
 
 GitHub's own push protection needs a paid plan for private repos, so gitleaks in CI does the job for free.
 
-## 🏠 6. Smart home
+## 6. Smart home
 
 - 2FA on Home Assistant, verified.
 - My smart-light device keys were in a `.txt` file and in screenshots. They moved into the password manager, and the screenshots were deleted.
 
-## 🧠 What I learned
+## What I learned
 
 - **Test the negative.** "Login works" isn't the test. "A password login gets refused" is.
 - **Plan your way back before you lock a door.** The dead-man switch saved me on the first try.
