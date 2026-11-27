@@ -1,5 +1,5 @@
 ---
-title: "🏠 Homelab"
+title: " Homelab"
 date: 2026-11-04
 ---
 

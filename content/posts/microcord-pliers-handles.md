@@ -10,7 +10,7 @@ description: I wrapped the handles of two mini pliers in 1.18 mm microcord, for 
 
 Finished mini pliers with the handles.
 
-## 🧰 What I used
+## What I used
 
 | What   | Detail                                                                      |
 | ------ | --------------------------------------------------------------------------- |
@@ -19,15 +19,15 @@ Finished mini pliers with the handles.
 | Tools  | Scissors, and a candle to melt the ends                                     |
 | Time   | Each handle took about 5 minutes, from the first loop to the melted end     |
 
-## 🤔 Why
+## Why
 
 Two reasons: **grip and looks.** Bare metal handles are slippery and cold. Cord gives my fingers something to hold, and now each pliers has its own color, so I can tell them apart in the bag.
 
-## 🪢 How I wrapped them
+## How I wrapped them
 
 I think the method is called whipping: you lay a loop of cord along the handle, wrap tight turns over it, then pull the end back under the turns so it locks itself. No glue, no knot that sticks out.
 
-### 🟠 The flat-nose pliers (orange)
+### The flat-nose pliers (orange)
 
 **1. Lay a loop along the handle.** The loop sits at the hook end of the handle. It's what locks the wrap at the end.
 
@@ -53,10 +53,10 @@ I think the method is called whipping: you lay a loop of cord along the handle, 
 
 ![Holding the wrapped handle over a candle to melt the cut ends](images/microcord-pliers-handles/06-orange-melt.jpg)
 
-### 🔵 The water pump pliers (blue)
+### The water pump pliers (blue)
 
 The water pump pliers got the same steps, in blue.
 
-## 🧠 What I learned
+## What I learned
 
 - **Melt, don't just cut.** A cut end of nylon cord frays; a quick pass over a flame seals it. Keep the flame on the cord, not the turns.

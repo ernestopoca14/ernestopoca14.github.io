@@ -19,8 +19,8 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
-      header: Schibsted Grotesk
-      body: Source Sans Pro
+      header: Inter
+      body: Inter
       code: IBM Plex Mono
     colors:
       # From the expenses app: Yeezy Bone (light), Amazonia (dark)
@@ -73,6 +73,9 @@ plugins:
   - source: github:quartz-community/table-of-contents
     enabled: true
     order: 50
+    layout:
+      position: right
+      priority: 20
   - source: github:quartz-community/crawl-links
     enabled: true
     options:
@@ -138,9 +141,6 @@ plugins:
     layout:
       position: left
       priority: 20
-      group: toolbar
-      groupOptions:
-        grow: true
   - source: github:quartz-community/backlinks
     enabled: true
     layout:
@@ -171,13 +171,11 @@ plugins:
     layout:
       position: left
       priority: 30
-      group: toolbar
   - source: github:quartz-community/reader-mode
     enabled: true
     layout:
       position: left
       priority: 35
-      group: toolbar
   - source: github:quartz-community/breadcrumbs
     enabled: true
     layout:
@@ -206,7 +204,7 @@ plugins:
     order: 25
     layout:
       position: left
-      priority: 25
+      priority: 12
       display: mobile-only
   - source: github:quartz-community/bases-page
     enabled: true
@@ -246,12 +244,23 @@ plugins:
       position: afterBody
       priority: 50
       display: all
+  # Workspace | Notebook design: sidebar nav and topics, page cover drawings, home posts views
+  - source: ./local-plugins/site-shell
+    enabled: true
+    layout:
+      position: left
+      priority: 15
+  - source: ./local-plugins/page-cover
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 7
+  - source: ./local-plugins/post-list
+    enabled: true
+    layout:
+      position: afterBody
+      priority: 5
 layout:
-  groups:
-    toolbar:
-      priority: 35
-      direction: row
-      gap: 0.5rem
   byPageType:
     "404":
       positions:

@@ -1,5 +1,5 @@
 ---
-title: "🔒 Security"
+title: " Security"
 date: 2026-11-17
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "🛠️ Project logs"
+title: " Project logs"
 date: 2026-10-31
 ---
 

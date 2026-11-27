@@ -1,5 +1,5 @@
 ---
-title: "💡 Quick tips"
+title: " Quick tips"
 date: 2026-10-31
 ---
 

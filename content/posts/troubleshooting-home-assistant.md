@@ -7,7 +7,7 @@ description: "My lights blinked every time I used the wall switch, and my diffus
 
 Two problems from my bedroom setup ([My bedroom on Home Assistant](bedroom-home-assistant)), and how I fixed them.
 
-## 🔥 Blinking lights at the wall switch
+## Blinking lights at the wall switch
 
 **What I saw:** I flipped the wall switch and the ceiling lights went on, off, on, off. It felt very chaotic, like being in the middle of a cyber attack in my own bedroom.
 
@@ -22,7 +22,7 @@ Home Assistant thought I was away: my phone's last location was hours old and ab
 
 **The fix:** a real power cut turns on **every** bulb at once, including the lamp on another plug. The wall switch only controls the ceiling. So the recovery automation now only acts if the ceiling **and** the lamp all came on within 40 seconds.
 
-## 💨 The diffuser that vanished
+## The diffuser that vanished
 
 **What I saw:** the diffuser showed "Unavailable" for about a week.
 
@@ -35,7 +35,7 @@ Home Assistant thought I was away: my phone's last location was hours old and ab
 2. Logged in to the Tuya cloud once from Home Assistant (a code from the app plus a QR scan) and read the new key.
 3. Put the new key into the integration. Same entity names, so the timer buttons and the "Water ran out" alert came back with no edits.
 
-## 💡 What I learned
+## What I learned
 
 - **Phone GPS is a guess.** A room presence sensor (mmWave radar) is next.
 - **An automation that turns things off should check one more fact** before it acts.
